@@ -5,12 +5,8 @@ if (!div) {
   throw new Error("#main element is not present.");
 }
 const game = new Game(div, 960, 540);
-let last = Date.now();
 const loop = () => {
-  const now = Date.now();
-  game.update((now - last) / 1000);
-  last = now;
-  window.requestAnimationFrame(loop);
+  game.update(1 / 60);
 };
 
 export default loop;
