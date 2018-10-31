@@ -91,16 +91,14 @@ export default class RenderSystem implements ISystem {
   }
 
   private setStyles(elem: HTMLElement, appearanceComp: IAppearanceComp, positionComp: IPositionComp): void {
-    elem.style.bottom = `${positionComp.y}px`;
-    elem.style.left = `${positionComp.x}px`;
+    elem.style.transform = `translate3d(${positionComp.x}px,${-positionComp.y}px,0px)`;
     elem.style.width = `${appearanceComp.width}px`;
     elem.style.height = `${appearanceComp.height}px`;
     elem.style.zIndex = `${appearanceComp.zIndex || 0}`;
   }
 
   private setHitboxDimensions(elem: HTMLElement, hitbox: IHitbox): void {
-    elem.style.bottom = `${hitbox.y}px`;
-    elem.style.left = `${hitbox.x}px`;
+    elem.style.transform = `translate3d(${hitbox.x}px,${-hitbox.y}px,0px)`;
     elem.style.width = `${hitbox.width}px`;
     elem.style.height = `${hitbox.height}px`;
     elem.style.visibility = hitbox.isActive ? "visible" : "hidden";
