@@ -4,7 +4,5 @@ Thumbs.db
 Desktop.ini
 
 /tmp
-/dist/*
-!/dist/.gitkeep
 
 /node_modules
