@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DOM Fighter</title>
+    <style media="screen">
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+        #main {
+            /*margin: 0 auto; */
+            position: relative;
+            overflow: hidden;
+        }
+        .entity {
+            position: relative;
+            /*position: absolute;*/
+            bottom: 0;
+            left: 0;
+            background-color: black;
+            /*transform: translate(-50%, 50%); */
+            box-sizing: border-box;
+        }
+        .hitbox {
+            position: absolute;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <div id="main"></div>
+    <script type="module">
+        import loop from "./dist/index.js";
+
+        loop();
+    </script>
+</body>
+</html>
