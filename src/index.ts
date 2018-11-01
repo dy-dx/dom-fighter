@@ -6,7 +6,7 @@ if (!div) {
 }
 const game = new Game(div, 960, 540);
 const loop = () => {
-  game.update(1 / 60);
+  game.update(1);
 };
 
 const launch = () => {

@@ -55,7 +55,7 @@ export default class Character implements IEntity {
     this.characterDefinitionComp = {
       name: "Blah",
       maxHealth: 1000,
-      walkSpeed: 300,
+      walkSpeed: 4,
     };
 
     this.physicsComp = {
