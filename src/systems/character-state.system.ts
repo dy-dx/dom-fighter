@@ -26,7 +26,7 @@ enum Direction {
 export default class CharacterStateSystem implements ISystem {
   public update(entities: IEntity[], dt: number): void {
     entities
-      .filter((e): e is ICharacterEntity => !!e.inputComp)
+      .filter((e): e is ICharacterEntity => !!e.characterStateComp)
       .forEach((e: ICharacterEntity) => {
         const pressed = e.inputComp;
         const walkSpeed = e.characterDefinitionComp.walkSpeed;

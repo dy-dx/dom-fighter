@@ -1,5 +1,6 @@
 import {
   IAppearanceComp,
+  ICharacterInputComp,
   ICharacterStateComp,
   IInputComp,
   IPhysicsComp,
@@ -12,7 +13,7 @@ export interface IEntity {
 
   appearanceComp?: IAppearanceComp;
   characterStateComp?: ICharacterStateComp;
-  inputComp?: IInputComp;
+  inputComp?: ICharacterInputComp | IInputComp;
   physicsComp?: IPhysicsComp;
   positionComp?: IPositionComp;
 

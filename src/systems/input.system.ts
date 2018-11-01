@@ -1,8 +1,8 @@
-import {IInputComp, InputAction} from "../components.js";
+import {ICharacterInputComp, InputAction} from "../components.js";
 import {IEntity} from "../entities/entity.js";
 import ISystem from "./system.js";
 
-const KEYCODES: {[key: number]: string} = {
+export const KEYCODES: {[key: number]: string} = {
   32: "space",
   37: "left",
   38: "up",
@@ -10,11 +10,15 @@ const KEYCODES: {[key: number]: string} = {
   40: "down",
   65: "a",
   68: "d",
+  74: "j",
+  75: "k",
+  76: "l",
+  80: "p",
   83: "s",
   87: "w",
 };
 
-const MAPPING: {[key: string]: InputAction} = {
+export const MAPPING: {[key: string]: InputAction} = {
   left: "left",
   up: "up",
   right: "right",
@@ -24,10 +28,15 @@ const MAPPING: {[key: string]: InputAction} = {
   d: "right",
   s: "down",
   space: "attack",
+
+  j: "prevFrame",
+  k: "pause",
+  l: "nextFrame",
+  p: "reset",
 };
 
 export default class InputSystem implements ISystem {
-  private pressed: IInputComp;
+  private pressed: ICharacterInputComp;
 
   constructor(document: Document) {
     this.pressed = {
@@ -55,7 +64,9 @@ export default class InputSystem implements ISystem {
     if (!key) { return; }
     evt.preventDefault();
     const action = MAPPING[key];
-    this.pressed[action] = true;
+    if ((this.pressed as any)[action] !== undefined) {
+      (this.pressed as any)[action] = true;
+    }
   }
 
   private releaseKey(evt: KeyboardEvent): void {
@@ -63,6 +74,8 @@ export default class InputSystem implements ISystem {
     if (!key) { return; }
     evt.preventDefault();
     const action = MAPPING[key];
-    this.pressed[action] = false;
+    if ((this.pressed as any)[action] !== undefined) {
+      (this.pressed as any)[action] = false;
+    }
   }
 }

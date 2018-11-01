@@ -2,8 +2,8 @@ import {
   CharacterState,
   IAppearanceComp,
   ICharacterDefinitionComp,
+  ICharacterInputComp,
   ICharacterStateComp,
-  IInputComp,
   IPhysicsComp,
   IPositionComp,
 } from "../components.js";
@@ -15,7 +15,7 @@ export default class Character implements IEntity {
   public appearanceComp: IAppearanceComp;
   public characterDefinitionComp: ICharacterDefinitionComp;
   public characterStateComp: ICharacterStateComp;
-  public inputComp: IInputComp;
+  public inputComp: ICharacterInputComp;
   public physicsComp: IPhysicsComp;
   public positionComp: IPositionComp;
 

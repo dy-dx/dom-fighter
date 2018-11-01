@@ -10,7 +10,13 @@ export interface IPositionComp {
   y: number;
 }
 
-export type InputAction = "left" | "up" | "right" | "down" | "attack";
+export type CharacterInputAction = "left" | "up" | "right" | "down" | "attack";
+export type DebugInputAction = "pause" | "reset" | "nextFrame" | "prevFrame";
+export type InputAction = CharacterInputAction | DebugInputAction;
+
+export type ICharacterInputComp = {
+  [K in CharacterInputAction]: boolean
+};
 
 export type IInputComp = {
   [K in InputAction]: boolean
