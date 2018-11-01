@@ -1,8 +1,21 @@
-import Character from "../character.js";
-import {CharacterState, ICharacterStateComp} from "../components.js";
+import {
+  CharacterState,
+  ICharacterDefinitionComp,
+  ICharacterStateComp,
+  IInputComp,
+  IPhysicsComp,
+} from "../components.js";
+import {IEntity} from "../entities/entity.js";
 import ISystem from "./system.js";
 
 import attackData from "../data/attack.js";
+
+interface ICharacterEntity extends IEntity {
+  characterDefinitionComp: ICharacterDefinitionComp;
+  characterStateComp: ICharacterStateComp;
+  inputComp: IInputComp;
+  physicsComp: IPhysicsComp;
+}
 
 enum Direction {
   Up,
@@ -11,12 +24,12 @@ enum Direction {
   Right,
 }
 export default class CharacterStateSystem implements ISystem {
-  public update(entities, dt: number): void {
+  public update(entities: IEntity[], dt: number): void {
     entities
-      .filter((e) => e.inputComp)
-      .forEach((e: Character) => { // fixme
+      .filter((e): e is ICharacterEntity => !!e.inputComp)
+      .forEach((e: ICharacterEntity) => {
         const pressed = e.inputComp;
-        const walkSpeed = e.walkSpeed;
+        const walkSpeed = e.characterDefinitionComp.walkSpeed;
         const physicsComp = e.physicsComp;
         const stateComp = e.characterStateComp;
 
@@ -51,7 +64,7 @@ export default class CharacterStateSystem implements ISystem {
       });
   }
 
-  private walk(stateComp, physicsComp, walkSpeed: number, direction: Direction) {
+  private walk(stateComp: ICharacterStateComp, physicsComp: IPhysicsComp, walkSpeed: number, direction: Direction) {
     if (this.setState(stateComp, CharacterState.Walk)) {
       if (direction === Direction.Left) {
         physicsComp.velocityX = -walkSpeed;
@@ -61,20 +74,20 @@ export default class CharacterStateSystem implements ISystem {
     }
   }
 
-  private stand(stateComp, physicsComp) {
+  private stand(stateComp: ICharacterStateComp, physicsComp: IPhysicsComp) {
     if (this.setState(stateComp, CharacterState.Stand)) {
       physicsComp.velocityX = 0;
     }
   }
 
-  private attack(stateComp, physicsComp) {
+  private attack(stateComp: ICharacterStateComp, physicsComp: IPhysicsComp) {
     if (this.setState(stateComp, CharacterState.Attack)) {
       physicsComp.velocityX = 0;
       stateComp.frameIndex = 0;
     }
   }
 
-  private endAttack(stateComp) {
+  private endAttack(stateComp: ICharacterStateComp) {
     this.setState(stateComp, CharacterState.AttackEnd);
     this.setState(stateComp, CharacterState.Stand);
     stateComp.frameIndex = 0;

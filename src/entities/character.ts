@@ -1,24 +1,30 @@
 import {
   CharacterState,
   IAppearanceComp,
+  ICharacterDefinitionComp,
   ICharacterStateComp,
   IInputComp,
   IPhysicsComp,
   IPositionComp,
-} from "./components.js";
+} from "../components.js";
+import {IEntity} from "../entities/entity.js";
 
-export default class Character {
+export default class Character implements IEntity {
+  public isMarkedForRemoval: boolean;
+  public isSafeToRemove: boolean;
   public appearanceComp: IAppearanceComp;
+  public characterDefinitionComp: ICharacterDefinitionComp;
   public characterStateComp: ICharacterStateComp;
   public inputComp: IInputComp;
   public physicsComp: IPhysicsComp;
   public positionComp: IPositionComp;
 
-  public walkSpeed: number;
   public isControlledByClient: boolean;
-  public isMarkedForRemoval: boolean;
 
   constructor(x: number) {
+    this.isMarkedForRemoval = false;
+    this.isSafeToRemove = false;
+
     this.positionComp = {
       x,
       y: 0,
@@ -40,13 +46,16 @@ export default class Character {
     };
 
     this.isControlledByClient = false;
-    this.isMarkedForRemoval = false;
-
-    this.walkSpeed = 300;
 
     this.characterStateComp = {
       state: CharacterState.Stand,
       frameIndex: 0,
+    };
+
+    this.characterDefinitionComp = {
+      name: "Blah",
+      maxHealth: 1000,
+      walkSpeed: 300,
     };
 
     this.physicsComp = {

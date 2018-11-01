@@ -10,13 +10,11 @@ export interface IPositionComp {
   y: number;
 }
 
-export interface IInputComp {
-  left: boolean;
-  up: boolean;
-  right: boolean;
-  down: boolean;
-  attack: boolean;
-}
+export type InputAction = "left" | "up" | "right" | "down" | "attack";
+
+export type IInputComp = {
+  [K in InputAction]: boolean
+};
 
 export interface IHitbox {
   isActive: boolean;
@@ -35,6 +33,12 @@ export interface IPhysicsComp {
   pushbox: IHitbox;
   hurtbox: IHitbox;
   hitbox: IHitbox;
+}
+
+export interface ICharacterDefinitionComp {
+  name: string;
+  maxHealth: number;
+  walkSpeed: number;
 }
 
 export enum CharacterState {

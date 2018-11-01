@@ -1,6 +1,11 @@
-import Character from "../character.js";
 import {IAppearanceComp, IHitbox, IPositionComp} from "../components.js";
+import {IEntity} from "../entities/entity.js";
 import ISystem from "./system.js";
+
+interface IRenderable extends IEntity {
+  appearanceComp: IAppearanceComp;
+  positionComp: IPositionComp;
+}
 
 export default class RenderSystem implements ISystem {
   private gameElement: HTMLElement;
@@ -12,12 +17,16 @@ export default class RenderSystem implements ISystem {
     this.gameElement = elem;
   }
 
-  public update(entities, dt: number): void {
+  public update(entities: IEntity[], dt: number): void {
     entities
-      .filter((e) => e.appearanceComp)
+      .filter((e): e is IRenderable => !!e.appearanceComp)
       .forEach((e) => {
-        if (e.isMarkedForRemoval && e.appearanceComp.element) {
-          e.appearanceComp.element.parentNode.removeChild(e.appearanceComp.element);
+        if (e.isMarkedForRemoval) {
+          if (e.appearanceComp.element) {
+            e.appearanceComp.element.parentNode!.removeChild(e.appearanceComp.element);
+            e.appearanceComp.element = undefined;
+          }
+          e.isSafeToRemove = true;
           return;
         }
 
@@ -31,9 +40,9 @@ export default class RenderSystem implements ISystem {
         }
 
         this.setStyles(e.appearanceComp.element, e.appearanceComp, e.positionComp);
-        if (e.inputComp) {
+        if (e.physicsComp) {
           [e.physicsComp.pushbox, e.physicsComp.hurtbox, e.physicsComp.hitbox].forEach((hitbox) => {
-            this.setHitboxDimensions(hitbox.element, hitbox);
+            this.setHitboxDimensions(hitbox.element!, hitbox);
           });
         }
       });
@@ -46,20 +55,20 @@ export default class RenderSystem implements ISystem {
     return elem;
   }
 
-  private createDebugBoxes(c: Character, elem: HTMLElement): void {
+  private createDebugBoxes(c: IRenderable, elem: HTMLElement): void {
     const boxColors = [
       {
-        hitbox: c.physicsComp.pushbox,
+        hitbox: c.physicsComp!.pushbox,
         borderColor: "blue",
         backgroundColor: "rgba(0, 0, 255, 0.25)",
       },
       {
-        hitbox: c.physicsComp.hurtbox,
+        hitbox: c.physicsComp!.hurtbox,
         borderColor: "green",
         backgroundColor: "rgba(0, 255, 0, 0.25)",
       },
       {
-        hitbox: c.physicsComp.hitbox,
+        hitbox: c.physicsComp!.hitbox,
         borderColor: "red",
         backgroundColor: "rgba(255, 0, 0, 0.25)",
       },

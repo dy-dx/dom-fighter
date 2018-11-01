@@ -1,4 +1,5 @@
-import {IInputComp} from "../components.js";
+import {IInputComp, InputAction} from "../components.js";
+import {IEntity} from "../entities/entity.js";
 import ISystem from "./system.js";
 
 const KEYCODES: {[key: number]: string} = {
@@ -13,7 +14,7 @@ const KEYCODES: {[key: number]: string} = {
   87: "w",
 };
 
-const MAPPING: {[key: string]: string} = {
+const MAPPING: {[key: string]: InputAction} = {
   left: "left",
   up: "up",
   right: "right",
@@ -41,7 +42,7 @@ export default class InputSystem implements ISystem {
     document.addEventListener("keyup", this.releaseKey.bind(this));
   }
 
-  public update(entities, dt: number): void {
+  public update(entities: IEntity[], dt: number): void {
     entities
       .filter((e) => e.isControlledByClient)
       .forEach((e) => {

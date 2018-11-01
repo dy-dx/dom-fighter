@@ -1,8 +1,15 @@
+import {IPhysicsComp, IPositionComp} from "../components.js";
+import {IEntity} from "../entities/entity.js";
 import ISystem from "./system.js";
 
+interface IPhysicsEntity extends IEntity {
+  physicsComp: IPhysicsComp;
+  positionComp: IPositionComp;
+}
+
 export default class CombatSystem implements ISystem {
-  public update(entities, dt): void {
-    const physicsEntities = entities.filter((e) => e.physicsComp);
+  public update(entities: IEntity[], dt: number): void {
+    const physicsEntities = entities.filter((e): e is IPhysicsEntity => !!e.physicsComp);
 
     physicsEntities.forEach((e) => {
       if (!e.physicsComp.hitbox.isActive) {
@@ -18,7 +25,7 @@ export default class CombatSystem implements ISystem {
     });
   }
 
-  private overlaps(a, b): boolean {
+  private overlaps(a: IPhysicsEntity, b: IPhysicsEntity): boolean {
       const bounds = {
         left: a.positionComp.x + a.physicsComp.hitbox.x,
         top: a.positionComp.y + a.physicsComp.hitbox.height,
