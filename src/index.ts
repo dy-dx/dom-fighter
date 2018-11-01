@@ -9,4 +9,8 @@ const loop = () => {
   game.update(1 / 60);
 };
 
-export default loop;
+const launch = () => {
+  setInterval(loop, 1000 / 60);
+};
+
+export default launch;
