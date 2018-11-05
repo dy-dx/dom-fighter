@@ -57,7 +57,13 @@ export enum CharacterState {
   Hitstun,
 }
 
+export enum CharacterSide {
+  P1,
+  P2,
+}
+
 export interface ICharacterStateComp {
   state: CharacterState;
   frameIndex: number;
+  side: CharacterSide;
 }

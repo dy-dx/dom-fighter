@@ -4,7 +4,7 @@ const div = document.getElementById("main");
 if (!div) {
   throw new Error("#main element is not present.");
 }
-const game = new Game(div, 960, 540);
+const game = new Game(div, 720, 400);
 const updateLoop = () => {
   game.update(1);
 };

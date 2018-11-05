@@ -11,6 +11,9 @@
         "noUnusedLocals": true,
         "strict": true
     },
+    "files": [
+        "node_modules/peerjs/dist/peer.js"
+    ],
     "include": [
         "src/**/*"
     ],

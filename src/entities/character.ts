@@ -1,4 +1,5 @@
 import {
+  CharacterSide,
   CharacterState,
   IAppearanceComp,
   ICharacterDefinitionComp,
@@ -21,7 +22,7 @@ export default class Character implements IEntity {
 
   public isControlledByClient: boolean;
 
-  constructor(x: number) {
+  constructor(side: CharacterSide, x: number) {
     this.isMarkedForRemoval = false;
     this.isSafeToRemove = false;
 
@@ -50,6 +51,7 @@ export default class Character implements IEntity {
     this.characterStateComp = {
       state: CharacterState.Stand,
       frameIndex: 0,
+      side,
     };
 
     this.characterDefinitionComp = {
