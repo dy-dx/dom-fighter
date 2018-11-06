@@ -42,7 +42,7 @@ export default class NetworkSystem implements ISystem {
       localPort: parseInt(urlParams.get("localport") || "", 10),
     });
     this.roundtripLatency = -1;
-    this.tickDelay = 4;
+    this.tickDelay = 10;
     this.clientInputs = [];
     this.remoteInputs = [];
     // weird hack to make the game wait for "future" inputs
@@ -62,7 +62,7 @@ export default class NetworkSystem implements ISystem {
 
   public update(entities: IEntity[], dt: number): void {
     this.isSimulationReady = false;
-    if (!this.network.isReady) {
+    if (!this.network.isReady || this.roundtripLatency === -1) {
       return;
     }
     let clientCharacter: ICharacterEntity;
@@ -161,6 +161,8 @@ export default class NetworkSystem implements ISystem {
   private onPong(timestamp: number): void {
     this.roundtripLatency = Date.now() - timestamp;
     console.log("Roundtrip latency:", this.roundtripLatency);
+    this.tickDelay = Math.ceil((this.roundtripLatency + 10) / (2 * 1000 / 60);
+    this.tickDelay = Math.min(10, this.tickDelay);
   }
 
   private sendChat(text: string): void {
