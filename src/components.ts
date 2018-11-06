@@ -47,6 +47,11 @@ export interface ICharacterDefinitionComp {
   walkSpeed: number;
 }
 
+export enum FacingDirection {
+  Left,
+  Right,
+}
+
 export enum CharacterState {
   Stand,
   Walk,
@@ -66,4 +71,5 @@ export interface ICharacterStateComp {
   state: CharacterState;
   frameIndex: number;
   side: CharacterSide;
+  facingDirection: FacingDirection;
 }

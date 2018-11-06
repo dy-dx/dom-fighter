@@ -13,6 +13,8 @@ import ISystem from "./systems/system.js";
 
 export default class Game {
   public currentTick: number;
+  public p1: Character | undefined;
+  public p2: Character | undefined;
   private isPaused: boolean;
   private height: number;
   private width: number;
@@ -36,7 +38,7 @@ export default class Game {
       new DebugSystem(this, document),
     ];
     this.simulationSystems = [
-      new CharacterStateSystem(),
+      new CharacterStateSystem(this),
       new PhysicsSystem(),
       new CombatSystem(),
     ];
@@ -56,12 +58,12 @@ export default class Game {
 
     this.entities = [];
     const stage = new Stage(this.width, this.height);
-    const playerCharacter = new Character(CharacterSide.P1, this.width / 2 - this.width / 4);
-    const opponentCharacter = new Character(CharacterSide.P2, this.width / 2 + this.width / 4);
+    this.p1 = new Character(CharacterSide.P1, this.width / 2 - this.width / 4);
+    this.p2 = new Character(CharacterSide.P2, this.width / 2 + this.width / 4);
 
     this.entities.push(stage);
-    this.entities.push(playerCharacter);
-    this.entities.push(opponentCharacter);
+    this.entities.push(this.p1);
+    this.entities.push(this.p2);
   }
 
   public togglePause() {

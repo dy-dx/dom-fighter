@@ -1,11 +1,14 @@
 import {
   CharacterState,
+  FacingDirection,
   ICharacterDefinitionComp,
   ICharacterStateComp,
   IInputComp,
   IPhysicsComp,
+  IPositionComp,
 } from "../components.js";
 import {IEntity} from "../entities/entity.js";
+import Game from "../game.js";
 import ISystem from "./system.js";
 
 import attackData from "../data/attack.js";
@@ -15,6 +18,7 @@ interface ICharacterEntity extends IEntity {
   characterStateComp: ICharacterStateComp;
   inputComp: IInputComp;
   physicsComp: IPhysicsComp;
+  positionComp: IPositionComp;
 }
 
 enum Direction {
@@ -24,6 +28,12 @@ enum Direction {
   Right,
 }
 export default class CharacterStateSystem implements ISystem {
+  private game: Game;
+
+  constructor(game: Game) {
+    this.game = game;
+  }
+
   public update(entities: IEntity[], dt: number): void {
     entities
       .filter((e): e is ICharacterEntity => !!e.characterStateComp)
@@ -31,7 +41,15 @@ export default class CharacterStateSystem implements ISystem {
         const pressed = e.inputComp;
         const walkSpeed = e.characterDefinitionComp.walkSpeed;
         const physicsComp = e.physicsComp;
+        const positionComp = e.positionComp;
         const stateComp = e.characterStateComp;
+
+        const opponentCharacter = e === this.game.p1 ? this.game.p2 : this.game.p1;
+        if (positionComp.x > opponentCharacter!.positionComp.x) {
+          stateComp.facingDirection = FacingDirection.Left;
+        } else {
+          stateComp.facingDirection = FacingDirection.Right;
+        }
 
         if (stateComp.state === CharacterState.Attack) {
           stateComp.frameIndex++;
@@ -44,6 +62,9 @@ export default class CharacterStateSystem implements ISystem {
             if (frameData.hitbox) {
               physicsComp.hitbox.isActive = true;
               Object.assign(physicsComp.hitbox, frameData.hitbox);
+              if (stateComp.facingDirection === FacingDirection.Left) {
+                physicsComp.hitbox.x = physicsComp.hitbox.x * -1 - physicsComp.hitbox.width;
+              }
             } else {
               physicsComp.hitbox.isActive = false;
             }

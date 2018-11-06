@@ -1,6 +1,7 @@
 import {
   CharacterSide,
   CharacterState,
+  FacingDirection,
   IAppearanceComp,
   ICharacterDefinitionComp,
   ICharacterInputComp,
@@ -52,6 +53,7 @@ export default class Character implements IEntity {
       state: CharacterState.Stand,
       frameIndex: 0,
       side,
+      facingDirection: side === CharacterSide.P1 ? FacingDirection.Left : FacingDirection.Right,
     };
 
     this.characterDefinitionComp = {
