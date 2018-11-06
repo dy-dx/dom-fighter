@@ -31,7 +31,7 @@ export default class Network {
     this.isReady = false;
 
     const urlParams = new URLSearchParams(window.location.search);
-    this.clientId = urlParams.get("id") || "my-unique-dom-fighter-id";
+    this.clientId = urlParams.get("id") || `df-${Math.random().toString(36).substring(2, 9)}`;
     this.peerId = urlParams.get("peerid") || null;
     this.isHost = !this.peerId;
 

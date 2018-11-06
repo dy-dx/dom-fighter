@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DOM Fighter</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <script type="application/javascript">
+        const createIframe = (src) => {
+            const frame = document.createElement('iframe');
+            frame.src = src;
+            document.body.appendChild(frame);
+            frame.contentWindow.addEventListener('DOMContentLoaded', () => {
+                const {scrollWidth, scrollHeight} = frame.contentWindow.document.body;
+                [frame.width, frame.height] = [scrollWidth, scrollHeight];
+            });
+        };
+
+        const hostId = `df-p1-${Math.random().toString(36).substring(2, 9)}`;
+        createIframe(`../?id=${hostId}`);
+        createIframe(`../?peerid=${hostId}`);
+    </script>
+</body>
+</html>

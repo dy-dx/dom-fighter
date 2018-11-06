@@ -6,7 +6,8 @@ const bs = browserSync.create();
 bs.init({
   server: true,
   files: [
-    'index.html',
+    '*.css',
+    '**/*.html',
     'dist/**/*.js',
   ],
 });

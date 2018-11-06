@@ -27,8 +27,10 @@ export default class Game {
   constructor(elem: HTMLElement, width: number, height: number) {
     this.currentTick = 0;
     this.isPaused = false;
-    this.height = height;
     this.width = width;
+    this.height = height;
+    elem.style.width = `${width}px`;
+    elem.style.height = `${height}px`;
 
     this.entities = [];
     this.networkSystem = new NetworkSystem(this);
