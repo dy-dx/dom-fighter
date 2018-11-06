@@ -13,6 +13,9 @@ type OnReadyCallback = () => void;
 interface IContructorParams {
   onReadyCallback: OnReadyCallback;
   onMessageCallback: OnMessageCallback;
+  clientId: string | null;
+  peerId: string | null;
+  localPort: number | null;
 }
 
 export default class Network {
@@ -25,17 +28,27 @@ export default class Network {
   private onMessageCallback: OnMessageCallback;
   private onReadyCallback: OnReadyCallback;
 
-  constructor({onMessageCallback, onReadyCallback}: IContructorParams) {
+  constructor({onMessageCallback, onReadyCallback, clientId, peerId, localPort}: IContructorParams) {
     this.onMessageCallback = onMessageCallback;
     this.onReadyCallback = onReadyCallback;
     this.isReady = false;
 
-    const urlParams = new URLSearchParams(window.location.search);
-    this.clientId = urlParams.get("id") || `df-${Math.random().toString(36).substring(2, 9)}`;
-    this.peerId = urlParams.get("peerid") || null;
+    this.clientId = clientId || `df-${Math.random().toString(36).substring(2, 9)}`;
+    this.peerId = peerId || null;
     this.isHost = !this.peerId;
 
-    this.peer = new Peer(this.clientId, {debug: 2});
+    const peerOpts: Peer.PeerJSOption = {
+      debug: 2,
+    };
+    if (localPort) {
+      Object.assign(peerOpts, {
+        host: "localhost",
+        port: localPort,
+        config: { iceServers: [{url: "stun:localhost:3478"}] },
+      });
+    }
+
+    this.peer = new Peer(this.clientId, peerOpts);
     this.connection = null;
 
     if (this.peerId) {

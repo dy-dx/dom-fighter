@@ -17,9 +17,10 @@
             });
         };
 
+        const queryString = (new URLSearchParams(window.location.search)).toString();
         const hostId = `df-p1-${Math.random().toString(36).substring(2, 9)}`;
-        createIframe(`../?id=${hostId}`);
-        createIframe(`../?peerid=${hostId}`);
+        createIframe(`../?id=${hostId}&${queryString}`);
+        createIframe(`../?peerid=${hostId}&${queryString}`);
     </script>
 </body>
 </html>

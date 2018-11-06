@@ -33,9 +33,13 @@ export default class NetworkSystem implements ISystem {
 
   constructor(game: Game) {
     this.game = game;
+    const urlParams = new URLSearchParams(window.location.search);
     this.network = new Network({
       onReadyCallback: this.onReady.bind(this),
       onMessageCallback: this.onMessage.bind(this),
+      clientId: urlParams.get("id"),
+      peerId: urlParams.get("peerid"),
+      localPort: parseInt(urlParams.get("localport") || "", 10),
     });
     this.roundtripLatency = -1;
     this.tickDelay = 4;
