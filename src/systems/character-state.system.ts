@@ -44,7 +44,7 @@ export default class CharacterStateSystem implements ISystem {
         const positionComp = e.positionComp;
         const stateComp = e.characterStateComp;
 
-        const opponentCharacter = e === this.game.p1 ? this.game.p2 : this.game.p1;
+        const opponentCharacter = e === this.game.getP1() ? this.game.getP2() : this.game.getP1();
         if (positionComp.x > opponentCharacter!.positionComp.x) {
           stateComp.facingDirection = FacingDirection.Left;
         } else {

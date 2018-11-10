@@ -23,7 +23,7 @@ export default class Character implements IEntity {
 
   public isControlledByClient: boolean;
 
-  constructor(side: CharacterSide, x: number) {
+  constructor(side: CharacterSide, x: number = 0) {
     this.isMarkedForRemoval = false;
     this.isSafeToRemove = false;
 
@@ -49,17 +49,18 @@ export default class Character implements IEntity {
 
     this.isControlledByClient = false;
 
+    this.characterDefinitionComp = {
+      name: "Blah",
+      maxHealth: 1000,
+      walkSpeed: 4,
+    };
+
     this.characterStateComp = {
       state: CharacterState.Stand,
       frameIndex: 0,
       side,
       facingDirection: side === CharacterSide.P1 ? FacingDirection.Left : FacingDirection.Right,
-    };
-
-    this.characterDefinitionComp = {
-      name: "Blah",
-      maxHealth: 1000,
-      walkSpeed: 4,
+      health: this.characterDefinitionComp.maxHealth,
     };
 
     this.physicsComp = {

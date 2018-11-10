@@ -21,6 +21,11 @@ interface IInputUpdate {
   tick: number;
 }
 
+export interface INetworkSystemDebugInfo {
+  tickDelay: number;
+  roundtripLatency: number;
+}
+
 export default class NetworkSystem implements ISystem {
   public isSimulationReady: boolean;
   private game: Game;
@@ -60,6 +65,13 @@ export default class NetworkSystem implements ISystem {
     this.isSimulationReady = false;
   }
 
+  public debugInfo(): INetworkSystemDebugInfo {
+    return {
+      tickDelay: this.tickDelay,
+      roundtripLatency: this.roundtripLatency,
+    };
+  }
+
   public update(entities: IEntity[], dt: number): void {
     this.isSimulationReady = false;
     if (!this.network.isReady) {
@@ -67,7 +79,7 @@ export default class NetworkSystem implements ISystem {
     }
     let clientCharacter: ICharacterEntity;
     let remoteCharacter: ICharacterEntity;
-    const simulationTick = this.game.currentTick;
+    const simulationTick = this.game.getCurrentTick();
     const futureInputTick = simulationTick + this.tickDelay;
 
     entities

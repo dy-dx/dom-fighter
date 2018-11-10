@@ -72,4 +72,5 @@ export interface ICharacterStateComp {
   frameIndex: number;
   side: CharacterSide;
   facingDirection: FacingDirection;
+  health: number;
 }

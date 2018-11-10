@@ -4,6 +4,7 @@ import {IEntity} from "./entities/entity.js";
 import Stage from "./entities/stage.js";
 import CharacterStateSystem from "./systems/character-state.system.js";
 import CombatSystem from "./systems/combat.system.js";
+import DebugRenderSystem from "./systems/debug-render.system.js";
 import DebugSystem from "./systems/debug.system.js";
 import InputSystem from "./systems/input.system.js";
 import NetworkSystem from "./systems/network.system.js";
@@ -12,14 +13,14 @@ import RenderSystem from "./systems/render.system.js";
 import ISystem from "./systems/system.js";
 
 export default class Game {
-  public currentTick: number;
-  public p1: Character | undefined;
-  public p2: Character | undefined;
+  public readonly height: number;
+  public readonly width: number;
+  public readonly networkSystem: NetworkSystem;
+  private currentTick: number;
   private isPaused: boolean;
-  private height: number;
-  private width: number;
+  private p1: Character;
+  private p2: Character;
   private entities: IEntity[];
-  private networkSystem: NetworkSystem;
   private systems: ISystem[];
   private simulationSystems: ISystem[];
   private renderSystems: ISystem[];
@@ -33,6 +34,9 @@ export default class Game {
     elem.style.height = `${height}px`;
 
     this.entities = [];
+    this.p1 = new Character(CharacterSide.P1);
+    this.p2 = new Character(CharacterSide.P2);
+
     this.networkSystem = new NetworkSystem(this);
     this.systems = [
       new InputSystem(document),
@@ -46,9 +50,22 @@ export default class Game {
     ];
     this.renderSystems = [
       new RenderSystem(elem),
+      new DebugRenderSystem(this, elem),
     ];
 
     this.reset();
+  }
+
+  public getCurrentTick(): number {
+    return this.currentTick;
+  }
+
+  public getP1(): Character {
+    return this.p1;
+  }
+
+  public getP2(): Character {
+    return this.p2;
   }
 
   public reset() {
