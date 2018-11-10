@@ -1,5 +1,7 @@
 export default {
   id: 'Blah',
+  damage: 80,
+  hitStop: 14,
   frames: [
     {},
     {},

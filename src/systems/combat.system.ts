@@ -1,31 +1,39 @@
-import {IPhysicsComp, IPositionComp} from "../components.js";
+import {
+  ICharacterStateComp,
+  ICombatComp,
+  IPhysicsComp,
+  IPositionComp,
+} from "../components.js";
 import {IEntity} from "../entities/entity.js";
 import ISystem from "./system.js";
 
-interface IPhysicsEntity extends IEntity {
+interface ICombatEntity extends IEntity {
+  combatComp: ICombatComp;
   physicsComp: IPhysicsComp;
   positionComp: IPositionComp;
+  characterStateComp?: ICharacterStateComp;
 }
 
 export default class CombatSystem implements ISystem {
   public update(entities: IEntity[], dt: number): void {
-    const physicsEntities = entities.filter((e): e is IPhysicsEntity => !!e.physicsComp);
+    const physicsEntities = entities.filter((e): e is ICombatEntity => !!e.combatComp);
 
     physicsEntities.forEach((e) => {
-      if (!e.physicsComp.hitbox.isActive) {
+      if (e.combatComp.hasHit || !e.physicsComp.hitbox.isActive) {
         return;
       }
 
       physicsEntities.filter((o) => e !== o && o.physicsComp.hurtbox).forEach((o) => {
-        if (this.overlaps(e, o)) {
-          // fixme lol
-          o.isMarkedForRemoval = true;
+        if (o.characterStateComp && this.overlaps(e, o)) {
+          o.characterStateComp.health -= Math.min(e.combatComp.damage, o.characterStateComp.health);
+          // prevent attack from dealing more damage on subsequent frames
+          e.combatComp.hasHit = true;
         }
       });
     });
   }
 
-  private overlaps(a: IPhysicsEntity, b: IPhysicsEntity): boolean {
+  private overlaps(a: ICombatEntity, b: ICombatEntity): boolean {
       const bounds = {
         left: a.positionComp.x + a.physicsComp.hitbox.x,
         top: a.positionComp.y + a.physicsComp.hitbox.height,

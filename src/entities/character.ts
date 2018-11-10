@@ -6,6 +6,7 @@ import {
   ICharacterDefinitionComp,
   ICharacterInputComp,
   ICharacterStateComp,
+  ICombatComp,
   IPhysicsComp,
   IPositionComp,
 } from "../components.js";
@@ -17,6 +18,7 @@ export default class Character implements IEntity {
   public appearanceComp: IAppearanceComp;
   public characterDefinitionComp: ICharacterDefinitionComp;
   public characterStateComp: ICharacterStateComp;
+  public combatComp: ICombatComp;
   public inputComp: ICharacterInputComp;
   public physicsComp: IPhysicsComp;
   public positionComp: IPositionComp;
@@ -61,6 +63,12 @@ export default class Character implements IEntity {
       side,
       facingDirection: side === CharacterSide.P1 ? FacingDirection.Left : FacingDirection.Right,
       health: this.characterDefinitionComp.maxHealth,
+    };
+
+    this.combatComp = {
+      damage: 0,
+      hasHit: false,
+      hitStop: 0,
     };
 
     this.physicsComp = {

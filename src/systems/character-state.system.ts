@@ -3,6 +3,7 @@ import {
   FacingDirection,
   ICharacterDefinitionComp,
   ICharacterStateComp,
+  ICombatComp,
   IInputComp,
   IPhysicsComp,
   IPositionComp,
@@ -16,6 +17,7 @@ import attackData from "../data/attack.js";
 interface ICharacterEntity extends IEntity {
   characterDefinitionComp: ICharacterDefinitionComp;
   characterStateComp: ICharacterStateComp;
+  combatComp: ICombatComp;
   inputComp: IInputComp;
   physicsComp: IPhysicsComp;
   positionComp: IPositionComp;
@@ -43,6 +45,7 @@ export default class CharacterStateSystem implements ISystem {
         const physicsComp = e.physicsComp;
         const positionComp = e.positionComp;
         const stateComp = e.characterStateComp;
+        const combatComp = e.combatComp;
 
         const opponentCharacter = e === this.game.getP1() ? this.game.getP2() : this.game.getP1();
         if (positionComp.x > opponentCharacter!.positionComp.x) {
@@ -52,22 +55,37 @@ export default class CharacterStateSystem implements ISystem {
         }
 
         if (stateComp.state === CharacterState.Attack) {
-          stateComp.frameIndex++;
-
           // extract this
           if (stateComp.frameIndex >= attackData.frames.length) {
-            this.endAttack(stateComp);
+            this.endAttack(stateComp, combatComp);
           } else {
             const frameData = attackData.frames[stateComp.frameIndex];
+
+            if (stateComp.frameIndex === 0) {
+              combatComp.damage = attackData.damage;
+              combatComp.hitStop = attackData.hitStop;
+            }
+
             if (frameData.hitbox) {
               physicsComp.hitbox.isActive = true;
               Object.assign(physicsComp.hitbox, frameData.hitbox);
               if (stateComp.facingDirection === FacingDirection.Left) {
                 physicsComp.hitbox.x = physicsComp.hitbox.x * -1 - physicsComp.hitbox.width;
               }
+
+              // if this is the first active frame, enable damage
+              if (!attackData.frames[stateComp.frameIndex - 1].hitbox) {
+                combatComp.hasHit = false;
+              }
             } else {
               physicsComp.hitbox.isActive = false;
             }
+          }
+
+          if (combatComp.hasHit && combatComp.hitStop > 0) {
+            combatComp.hitStop--;
+          } else {
+            stateComp.frameIndex++;
           }
         }
 
@@ -108,10 +126,12 @@ export default class CharacterStateSystem implements ISystem {
     }
   }
 
-  private endAttack(stateComp: ICharacterStateComp) {
+  private endAttack(stateComp: ICharacterStateComp, combatComp: ICombatComp) {
     this.setState(stateComp, CharacterState.AttackEnd);
     this.setState(stateComp, CharacterState.Stand);
     stateComp.frameIndex = 0;
+    combatComp.hasHit = false;
+    combatComp.hitStop = 0;
   }
 
   private setState(stateComp: ICharacterStateComp, targetState: CharacterState): boolean {

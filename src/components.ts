@@ -41,6 +41,12 @@ export interface IPhysicsComp {
   hitbox: IHitbox;
 }
 
+export interface ICombatComp {
+  damage: number;
+  hasHit: boolean;
+  hitStop: number;
+}
+
 export interface ICharacterDefinitionComp {
   name: string;
   maxHealth: number;
@@ -59,7 +65,7 @@ export enum CharacterState {
   AttackEnd,
   Block,
   Blockstun,
-  Hitstun,
+  Hitstop,
 }
 
 export enum CharacterSide {

@@ -78,6 +78,7 @@ export default class DebugRenderSystem implements ISystem {
     return [
       `p1: ${c.characterStateComp.health}hp | ${c.positionComp.x},${c.positionComp.y}`,
       `state: ${CharacterState[c.characterStateComp.state]}`,
+      `hitstop: ${c.combatComp.hitStop}`,
     ].join("\n");
   }
 
