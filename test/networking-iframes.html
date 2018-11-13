@@ -6,11 +6,14 @@
     <link rel="stylesheet" href="../style.css">
 </head>
 <body>
+    <div class="iframe-container"></div>
     <script type="application/javascript">
+        const iframeContainer = document.querySelector('.iframe-container');
+
         const createIframe = (src) => {
             const frame = document.createElement('iframe');
             frame.src = src;
-            document.body.appendChild(frame);
+            iframeContainer.appendChild(frame);
             frame.contentWindow.addEventListener('DOMContentLoaded', () => {
                 const {scrollWidth, scrollHeight} = frame.contentWindow.document.body;
                 [frame.width, frame.height] = [scrollWidth, scrollHeight];

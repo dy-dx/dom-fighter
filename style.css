@@ -7,6 +7,12 @@ body {
 iframe {
   border: none;
 }
+.iframe-container {
+  display: flex;
+  flex-wrap: wrap;
+  height: 100%;
+  overflow: hidden;
+}
 #main {
   margin: 0 auto;
   position: relative;
