@@ -7,6 +7,8 @@ import {
 import {IEntity} from "../entities/entity.js";
 import ISystem from "./system.js";
 
+import attackData from "../data/attack.js";
+
 interface ICombatEntity extends IEntity {
   combatComp: ICombatComp;
   physicsComp: IPhysicsComp;
@@ -25,9 +27,16 @@ export default class CombatSystem implements ISystem {
 
       physicsEntities.filter((o) => e !== o && o.physicsComp.hurtbox).forEach((o) => {
         if (o.characterStateComp && this.overlaps(e, o)) {
-          o.characterStateComp.health -= Math.min(e.combatComp.damage, o.characterStateComp.health);
+          o.characterStateComp.health -= Math.min(attackData.damage, o.characterStateComp.health);
           // prevent attack from dealing more damage on subsequent frames
           e.combatComp.hasHit = true;
+          e.combatComp.hitStop = attackData.hitStop;
+          o.combatComp.hitStop = attackData.hitStop;
+          o.combatComp.hitStun = attackData.hitStun;
+          o.combatComp.slideTime = attackData.slideTime;
+          o.combatComp.slideSpeed = attackData.slideSpeed;
+          // Opponent slides in the direction that the character is facing
+          o.combatComp.slideDirection = e.characterStateComp!.facingDirection;
         }
       });
     });

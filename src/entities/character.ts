@@ -69,6 +69,10 @@ export default class Character implements IEntity {
       damage: 0,
       hasHit: false,
       hitStop: 0,
+      hitStun: 0,
+      slideTime: 0,
+      slideSpeed: 0,
+      slideDirection: FacingDirection.Left,
     };
 
     this.physicsComp = {

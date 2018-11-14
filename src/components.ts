@@ -45,6 +45,10 @@ export interface ICombatComp {
   damage: number;
   hasHit: boolean;
   hitStop: number;
+  hitStun: number;
+  slideTime: number;
+  slideSpeed: number;
+  slideDirection: FacingDirection;
 }
 
 export interface ICharacterDefinitionComp {
@@ -66,6 +70,8 @@ export enum CharacterState {
   Block,
   Blockstun,
   Hitstop,
+  Hitstun,
+  HitstunEnd,
 }
 
 export enum CharacterSide {

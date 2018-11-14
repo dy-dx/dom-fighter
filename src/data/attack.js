@@ -1,7 +1,10 @@
 export default {
   id: 'Blah',
   damage: 80,
-  hitStop: 14,
+  hitStop: 12,
+  hitStun: 8,
+  slideTime: 8,
+  slideSpeed: 3,
   frames: [
     {},
     {},

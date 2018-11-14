@@ -48,10 +48,44 @@ export default class CharacterStateSystem implements ISystem {
         const combatComp = e.combatComp;
 
         const opponentCharacter = e === this.game.getP1() ? this.game.getP2() : this.game.getP1();
+
+        if (stateComp.health <= 0) {
+          // fixme
+          physicsComp.hurtbox.isActive = false;
+          physicsComp.pushbox.isActive = false;
+          return;
+        }
+
         if (positionComp.x > opponentCharacter!.positionComp.x) {
           stateComp.facingDirection = FacingDirection.Left;
         } else {
           stateComp.facingDirection = FacingDirection.Right;
+        }
+
+        if (combatComp.hitStun > 0) {
+          if (stateComp.state !== CharacterState.Hitstun) {
+            this.setState(stateComp, CharacterState.Hitstun);
+          }
+        }
+
+        if (stateComp.state === CharacterState.Hitstun) {
+          if (combatComp.hitStop > 0) {
+            combatComp.hitStop--;
+            physicsComp.velocityX = 0;
+          } else if (combatComp.hitStun <= 0) {
+            this.endHitstun(stateComp, physicsComp, combatComp);
+          } else {
+            combatComp.hitStun--;
+            if (combatComp.slideTime > 0) {
+              combatComp.slideTime--;
+
+              physicsComp.velocityX = combatComp.slideSpeed * (
+                combatComp.slideDirection === FacingDirection.Right ? 1 : -1
+              );
+            } else {
+              physicsComp.velocityX = 0;
+            }
+          }
         }
 
         if (stateComp.state === CharacterState.Attack) {
@@ -60,11 +94,6 @@ export default class CharacterStateSystem implements ISystem {
             this.endAttack(stateComp, combatComp);
           } else {
             const frameData = attackData.frames[stateComp.frameIndex];
-
-            if (stateComp.frameIndex === 0) {
-              combatComp.damage = attackData.damage;
-              combatComp.hitStop = attackData.hitStop;
-            }
 
             if (frameData.hitbox) {
               physicsComp.hitbox.isActive = true;
@@ -82,7 +111,7 @@ export default class CharacterStateSystem implements ISystem {
             }
           }
 
-          if (combatComp.hasHit && combatComp.hitStop > 0) {
+          if (combatComp.hitStop > 0) {
             combatComp.hitStop--;
           } else {
             stateComp.frameIndex++;
@@ -134,6 +163,16 @@ export default class CharacterStateSystem implements ISystem {
     combatComp.hitStop = 0;
   }
 
+  private endHitstun(stateComp: ICharacterStateComp, physicsComp: IPhysicsComp, combatComp: ICombatComp) {
+    this.setState(stateComp, CharacterState.HitstunEnd);
+    this.setState(stateComp, CharacterState.Stand);
+    combatComp.hitStop = 0;
+    combatComp.hitStun = 0;
+    combatComp.slideTime = 0;
+    combatComp.slideSpeed = 0;
+    physicsComp.velocityX = 0;
+  }
+
   private setState(stateComp: ICharacterStateComp, targetState: CharacterState): boolean {
     if (this.canSetState(stateComp, targetState)) {
       stateComp.state = targetState;
@@ -143,13 +182,17 @@ export default class CharacterStateSystem implements ISystem {
   }
   private canSetState(stateComp: ICharacterStateComp, targetState: CharacterState): boolean {
     if (targetState === CharacterState.Stand) {
-      return [CharacterState.Walk, CharacterState.AttackEnd].includes(stateComp.state);
+      return [CharacterState.Walk, CharacterState.HitstunEnd, CharacterState.AttackEnd].includes(stateComp.state);
     } else if (targetState === CharacterState.Walk) {
       return [CharacterState.Walk, CharacterState.Stand].includes(stateComp.state);
     } else if (targetState === CharacterState.Attack) {
       return [CharacterState.Walk, CharacterState.Stand].includes(stateComp.state);
     } else if (targetState === CharacterState.AttackEnd) {
       return [CharacterState.Attack].includes(stateComp.state);
+    } else if (targetState === CharacterState.HitstunEnd) {
+      return [CharacterState.Hitstun].includes(stateComp.state);
+    } else if (targetState === CharacterState.Hitstun) {
+      return true;
     }
     return false;
   }
