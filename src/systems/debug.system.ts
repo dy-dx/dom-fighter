@@ -1,7 +1,7 @@
 import {IInputComp} from "../components.js";
 import {IEntity} from "../entities/entity.js";
 import Game from "../game.js";
-import {KEYCODES, MAPPING} from "./input.system.js";
+import {MAPPING} from "./input.system.js";
 import ISystem from "./system.js";
 
 // this has its own input listeners to avoid kludging another InputComponent somewhere
@@ -45,22 +45,22 @@ export default class DebugSystem implements ISystem {
   }
 
   private pressKey(evt: KeyboardEvent): void {
-    const key = KEYCODES[evt.which];
-    if (!key) { return; }
+    if (evt.ctrlKey || evt.metaKey) { return; }
+    const action = MAPPING[evt.code];
+    if (!action) { return; }
     evt.preventDefault();
-    const action = MAPPING[key];
-    if (this.pressed[action] !== undefined) {
-      this.pressed[action] = true;
+    if ((this.pressed as any)[action] !== undefined) {
+      (this.pressed as any)[action] = true;
     }
   }
 
   private releaseKey(evt: KeyboardEvent): void {
-    const key = KEYCODES[evt.which];
-    if (!key) { return; }
+    if (evt.ctrlKey || evt.metaKey) { return; }
+    const action = MAPPING[evt.code];
+    if (!action) { return; }
     evt.preventDefault();
-    const action = MAPPING[key];
-    if (this.pressed[action] !== undefined) {
-      this.pressed[action] = false;
+    if ((this.pressed as any)[action] !== undefined) {
+      (this.pressed as any)[action] = false;
     }
   }
 }
