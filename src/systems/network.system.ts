@@ -28,6 +28,7 @@ export interface INetworkSystemDebugInfo {
 
 export default class NetworkSystem implements ISystem {
   public isSimulationReady: boolean;
+  public pingInterval = 240;
   private game: Game;
   private network: Network;
   // Network state that we don't care to put into an entity
@@ -79,8 +80,13 @@ export default class NetworkSystem implements ISystem {
     }
     let clientCharacter: ICharacterEntity;
     let remoteCharacter: ICharacterEntity;
-    const simulationTick = this.game.getCurrentTick();
+    const simulationTick = this.game.getSimulationTick();
+    const updateTick = this.game.getUpdateTick();
     const futureInputTick = simulationTick + this.tickDelay;
+
+    if (updateTick % this.pingInterval === 0) {
+      this.sendPing();
+    }
 
     entities
       .filter((e): e is ICharacterEntity => !!e.characterStateComp)
@@ -172,7 +178,6 @@ export default class NetworkSystem implements ISystem {
 
   private onPong(timestamp: number): void {
     this.roundtripLatency = Date.now() - timestamp;
-    console.log("Roundtrip latency:", this.roundtripLatency);
   }
 
   private sendChat(text: string): void {

@@ -17,7 +17,8 @@ export default class Game {
   public readonly height: number;
   public readonly width: number;
   public readonly networkSystem: NetworkSystem;
-  private currentTick: number;
+  private simulationTick: number;
+  private updateTick: number;
   private isPaused: boolean;
   private p1!: Character;
   private p2!: Character;
@@ -27,7 +28,8 @@ export default class Game {
   private renderSystems: ISystem[];
 
   constructor(elem: HTMLElement, width: number, height: number) {
-    this.currentTick = 0;
+    this.simulationTick = 0;
+    this.updateTick = 0;
     this.isPaused = false;
     this.width = width;
     this.height = height;
@@ -54,8 +56,12 @@ export default class Game {
 
   }
 
-  public getCurrentTick(): number {
-    return this.currentTick;
+  public getSimulationTick(): number {
+    return this.simulationTick;
+  }
+
+  public getUpdateTick(): number {
+    return this.updateTick;
   }
 
   public getP1(): Character {
@@ -90,6 +96,7 @@ export default class Game {
     if (!this.isPaused && this.networkSystem.isSimulationReady) {
       this.tick(dt);
     }
+    this.updateTick++;
   }
 
   public render(dt: number) {
@@ -118,6 +125,6 @@ export default class Game {
       s.update(this.entities, dt);
     });
 
-    this.currentTick++;
+    this.simulationTick++;
   }
 }
