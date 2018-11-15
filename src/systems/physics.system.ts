@@ -19,9 +19,11 @@ export default class PhysicsSystem implements ISystem {
       p.x += vx * dt;
       p.y += vy * dt;
 
+      if (!ph.isMoveable || !ph.pushbox.isActive) { return; }
+
       // naive collision handling, resolve x only
       if (vx !== 0) {
-        physicsEntities.filter((o) => e !== o && o.physicsComp.pushbox).forEach((o) => {
+        physicsEntities.filter((o) => e !== o && o.physicsComp.pushbox.isActive).forEach((o) => {
           if (this.overlaps(e, o)) {
             const oLeft = o.positionComp.x + o.physicsComp.pushbox.x;
             if (Math.sign(vx) > 0) {
