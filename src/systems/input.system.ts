@@ -13,10 +13,11 @@ export const MAPPING: {[key: string]: InputAction} = {
   KeyS: "down",
   Space: "attack",
 
-  KeyJ: "prevFrame",
+  KeyI: "saveState",
+  KeyO: "loadState",
+  KeyP: "reset",
   KeyK: "pause",
   KeyL: "nextFrame",
-  KeyP: "reset",
 };
 
 export default class InputSystem implements ISystem {

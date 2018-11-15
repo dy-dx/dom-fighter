@@ -1,10 +1,11 @@
-import {IAppearanceComp, IHitbox, IPositionComp} from "../components.js";
+import {HitboxType, IAppearanceComp, IHitbox, IPhysicsComp, IPositionComp} from "../components.js";
 import {IEntity} from "../entities/entity.js";
 import ISystem from "./system.js";
 
 interface IRenderable extends IEntity {
   appearanceComp: IAppearanceComp;
   positionComp: IPositionComp;
+  physicsComp?: IPhysicsComp;
 }
 
 export default class RenderSystem implements ISystem {
@@ -21,60 +22,65 @@ export default class RenderSystem implements ISystem {
     entities
       .filter((e): e is IRenderable => !!e.appearanceComp)
       .forEach((e) => {
-        if (e.isMarkedForRemoval) {
-          if (e.appearanceComp.element) {
-            e.appearanceComp.element.parentNode!.removeChild(e.appearanceComp.element);
-            e.appearanceComp.element = undefined;
-          }
-          e.isSafeToRemove = true;
-          return;
-        }
+        const elem = this.findOrCreateElement(e);
+        this.setStyles(elem, e.appearanceComp, e.positionComp);
 
-        // fixme
-        if (!e.appearanceComp.element) {
-          const elem = this.createElement(e.appearanceComp);
-          if (e.inputComp) {
-            this.createDebugBoxes(e, elem);
-          }
-          e.appearanceComp.element = elem;
-        }
-
-        this.setStyles(e.appearanceComp.element, e.appearanceComp, e.positionComp);
         if (e.physicsComp) {
           [e.physicsComp.pushbox, e.physicsComp.hurtbox, e.physicsComp.hitbox].forEach((hitbox) => {
-            this.setHitboxDimensions(hitbox.element!, hitbox);
+            const elementId = `${elem.id}-${hitbox.type}`;
+            const hitboxElem = document.getElementById(elementId);
+            if (!hitboxElem) { throw new Error(`No element with id: ${elementId}`); }
+            this.setHitboxDimensions(hitboxElem, hitbox);
           });
         }
       });
   }
 
-  private createElement(appearanceComp: IAppearanceComp): HTMLElement {
+  private findOrCreateElement(e: IRenderable): HTMLElement {
+    const existingElement = document.getElementById(e.id.toString());
+    if (existingElement) {
+      return existingElement;
+    }
+    const newElement = this.createParentElement(e.appearanceComp, e.id.toString());
+    if (e.physicsComp) {
+      this.createDebugBoxes(newElement, e.physicsComp);
+    }
+    return newElement;
+  }
+
+  private createParentElement(appearanceComp: IAppearanceComp, id: string): HTMLElement {
     const elem = document.createElement("div");
+    elem.id = id;
     elem.className = "entity";
     this.gameElement.appendChild(elem);
     return elem;
   }
 
-  private createDebugBoxes(c: IRenderable, elem: HTMLElement): void {
+  private createDebugBoxes(parentElem: HTMLElement, physicsComp: IPhysicsComp): void {
     const boxColors = [
       {
-        hitbox: c.physicsComp!.pushbox,
+        id: `${parentElem.id}-${HitboxType.Pushbox}`,
+        hitbox: physicsComp.pushbox,
         borderColor: "blue",
         backgroundColor: "rgba(0, 0, 255, 0.25)",
       },
       {
-        hitbox: c.physicsComp!.hurtbox,
+        id: `${parentElem.id}-${HitboxType.Hurtbox}`,
+        hitbox: physicsComp.hurtbox,
         borderColor: "green",
         backgroundColor: "rgba(0, 255, 0, 0.25)",
       },
       {
-        hitbox: c.physicsComp!.hitbox,
+        id: `${parentElem.id}-${HitboxType.Hitbox}`,
+        hitbox: physicsComp.hitbox,
         borderColor: "red",
         backgroundColor: "rgba(255, 0, 0, 0.25)",
       },
       // a hack to display the position marker using hitbox renderer
       {
+        id: `${parentElem.id}-position`,
         hitbox: {
+          type: HitboxType.Hitbox,
           isActive: true,
           width: 3,
           height: 12,
@@ -86,7 +92,7 @@ export default class RenderSystem implements ISystem {
       },
     ];
 
-    boxColors.forEach(({hitbox, borderColor, backgroundColor}) => {
+    boxColors.forEach(({id, hitbox, borderColor, backgroundColor}) => {
       const boxElem = document.createElement("div");
       boxElem.style.backgroundColor = backgroundColor;
       boxElem.style.borderColor = borderColor;
@@ -94,8 +100,8 @@ export default class RenderSystem implements ISystem {
       boxElem.style.borderWidth = "1px";
       boxElem.className = "hitbox";
       this.setHitboxDimensions(boxElem, hitbox);
-      hitbox.element = boxElem;
-      elem.appendChild(boxElem);
+      boxElem.id = id;
+      parentElem.appendChild(boxElem);
     });
   }
 

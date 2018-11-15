@@ -2,6 +2,7 @@ import {
   CharacterSide,
   CharacterState,
   FacingDirection,
+  HitboxType,
   IAppearanceComp,
   ICharacterDefinitionComp,
   ICharacterInputComp,
@@ -13,8 +14,7 @@ import {
 import {IEntity} from "../entities/entity.js";
 
 export default class Character implements IEntity {
-  public isMarkedForRemoval: boolean;
-  public isSafeToRemove: boolean;
+  public id: number = 0;
   public appearanceComp: IAppearanceComp;
   public characterDefinitionComp: ICharacterDefinitionComp;
   public characterStateComp: ICharacterStateComp;
@@ -26,9 +26,6 @@ export default class Character implements IEntity {
   public isControlledByClient: boolean;
 
   constructor(side: CharacterSide, x: number = 0) {
-    this.isMarkedForRemoval = false;
-    this.isSafeToRemove = false;
-
     this.positionComp = {
       x,
       y: 0,
@@ -80,6 +77,7 @@ export default class Character implements IEntity {
       velocityX: 0,
       velocityY: 0,
       hitbox: {
+        type: HitboxType.Hitbox,
         isActive: false,
         width: 10,
         height: 10,
@@ -87,6 +85,7 @@ export default class Character implements IEntity {
         y: 0,
       },
       hurtbox: {
+        type: HitboxType.Hurtbox,
         isActive: true,
         width: 180,
         height: 220,
@@ -94,6 +93,7 @@ export default class Character implements IEntity {
         y: 0,
       },
       pushbox: {
+        type: HitboxType.Pushbox,
         isActive: true,
         width: 100,
         height: 180,

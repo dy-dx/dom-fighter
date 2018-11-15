@@ -1,8 +1,7 @@
 export interface IAppearanceComp {
   width: number;
   height: number;
-  zIndex?: number;
-  element?: HTMLElement;
+  zIndex: number;
 }
 
 export interface IPositionComp {
@@ -11,7 +10,7 @@ export interface IPositionComp {
 }
 
 export type CharacterInputAction = "left" | "up" | "right" | "down" | "attack";
-export type DebugInputAction = "pause" | "reset" | "nextFrame" | "prevFrame";
+export type DebugInputAction = "pause" | "reset" | "nextFrame" | "saveState" | "loadState";
 export type InputAction = CharacterInputAction | DebugInputAction;
 
 export type ICharacterInputComp = {
@@ -22,14 +21,20 @@ export type IInputComp = {
   [K in InputAction]: boolean
 };
 
+export enum HitboxType {
+  Hitbox,
+  Hurtbox,
+  Pushbox,
+  Blockbox,
+}
+
 export interface IHitbox {
+  type: HitboxType;
   isActive: boolean;
   width: number;
   height: number;
   x: number;
   y: number;
-  // horrible hack, fixme
-  element?: HTMLElement;
 }
 
 export interface IPhysicsComp {

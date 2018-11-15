@@ -2,15 +2,11 @@ import {IAppearanceComp, IPositionComp} from "../components.js";
 import {IEntity} from "./entity.js";
 
 export default class Stage implements IEntity {
+  public id: number = 0;
   public positionComp: IPositionComp;
   public appearanceComp: IAppearanceComp;
-  public isMarkedForRemoval: boolean;
-  public isSafeToRemove: boolean;
 
   constructor(width: number, height: number) {
-    this.isMarkedForRemoval = false;
-    this.isSafeToRemove = false;
-
     this.positionComp = {
       x: 0,
       y: 0,
@@ -18,8 +14,7 @@ export default class Stage implements IEntity {
     this.appearanceComp = {
       height,
       width,
+      zIndex: 0,
     };
-
-    this.isMarkedForRemoval = false;
   }
 }

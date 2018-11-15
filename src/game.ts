@@ -11,6 +11,7 @@ import NetworkSystem from "./systems/network.system.js";
 import PhysicsSystem from "./systems/physics.system.js";
 import RenderSystem from "./systems/render.system.js";
 import ISystem from "./systems/system.js";
+import deepClone from "./util/deep-clone.js";
 
 export default class Game {
   public readonly height: number;
@@ -18,9 +19,9 @@ export default class Game {
   public readonly networkSystem: NetworkSystem;
   private currentTick: number;
   private isPaused: boolean;
-  private p1: Character;
-  private p2: Character;
-  private entities: IEntity[];
+  private p1!: Character;
+  private p2!: Character;
+  private entities!: IEntity[];
   private systems: ISystem[];
   private simulationSystems: ISystem[];
   private renderSystems: ISystem[];
@@ -33,9 +34,7 @@ export default class Game {
     elem.style.width = `${width}px`;
     elem.style.height = `${height}px`;
 
-    this.entities = [];
-    this.p1 = new Character(CharacterSide.P1);
-    this.p2 = new Character(CharacterSide.P2);
+    this.resetEntities();
 
     this.networkSystem = new NetworkSystem(this);
     this.systems = [
@@ -53,7 +52,6 @@ export default class Game {
       new DebugRenderSystem(this, elem),
     ];
 
-    this.reset();
   }
 
   public getCurrentTick(): number {
@@ -68,13 +66,7 @@ export default class Game {
     return this.p2;
   }
 
-  public reset() {
-    if (this.entities.length > 0) {
-      // hack
-      this.entities.forEach((e) => e.isMarkedForRemoval = true);
-      this.render(1);
-    }
-
+  public resetEntities() {
     this.entities = [];
     const stage = new Stage(this.width, this.height);
     this.p1 = new Character(CharacterSide.P1, this.width / 2 - this.width / 4);
@@ -83,6 +75,8 @@ export default class Game {
     this.entities.push(stage);
     this.entities.push(this.p1);
     this.entities.push(this.p2);
+    // fixme, terrible hack
+    this.entities.forEach((e, i) => e.id = i);
   }
 
   public togglePause() {
@@ -111,16 +105,15 @@ export default class Game {
     this.tick(1);
   }
 
-  private tick(dt: number) {
-    // fixme
-    // iterate backwards so we can splice
-    // for (let i = this.entities.length - 1; i >= 0; i--) {
-    //   const entity = this.entities[i];
-    //   if (entity.isSafeToRemove) {
-    //     this.entities.splice(i, 1);
-    //   }
-    // }
+  public getStateCopy(): IEntity[] {
+    return deepClone(this.entities);
+  }
 
+  public loadState(entities: IEntity[]): void {
+    this.entities = entities;
+  }
+
+  private tick(dt: number) {
     this.simulationSystems.forEach((s) => {
       s.update(this.entities, dt);
     });

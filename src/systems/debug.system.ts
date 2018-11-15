@@ -1,56 +1,62 @@
-import {IInputComp} from "../components.js";
+import {InputAction, IInputComp} from "../components.js";
 import {IEntity} from "../entities/entity.js";
 import Game from "../game.js";
+import deepClone from "../util/deep-clone.js";
 import {MAPPING} from "./input.system.js";
 import ISystem from "./system.js";
 
 // this has its own input listeners to avoid kludging another InputComponent somewhere
+// and we only listen on keyup here to make things easier
 
 export default class DebugSystem implements ISystem {
   private game: Game;
-  private pressed: IInputComp;
+  private released: IInputComp;
+  private savedEntityState?: IEntity[];
 
   constructor(game: Game, document: Document) {
     this.game = game;
 
-    this.pressed = {
+    this.released = {
       left: false,
       up: false,
       right: false,
       down: false,
       attack: false,
 
-      prevFrame: false,
       pause: false,
-      nextFrame: false,
       reset: false,
+      nextFrame: false,
+      saveState: false,
+      loadState: false,
     };
 
-    document.addEventListener("keydown", this.pressKey.bind(this));
     document.addEventListener("keyup", this.releaseKey.bind(this));
   }
 
   public update(entities: IEntity[], dt: number): void {
-    const pressed = this.pressed;
+    const released = this.released;
 
-    if (pressed.pause) {
+    if (released.pause) {
       this.game.togglePause();
-    } else if (pressed.reset) {
-      this.game.reset();
-    } else if (pressed.nextFrame) {
+    } else if (released.reset) {
+      this.game.resetEntities();
+    } else if (released.nextFrame) {
       this.game.advanceFrame();
-    } else if (pressed.prevFrame) {
-      // TODO
+    } else if (released.saveState) {
+      this.savedEntityState = this.game.getStateCopy();
+    } else if (released.loadState) {
+      if (this.savedEntityState) {
+        this.game.loadState(deepClone(this.savedEntityState));
+      }
+    } else {
+      return;
     }
-  }
 
-  private pressKey(evt: KeyboardEvent): void {
-    if (evt.ctrlKey || evt.metaKey) { return; }
-    const action = MAPPING[evt.code];
-    if (!action) { return; }
-    evt.preventDefault();
-    if ((this.pressed as any)[action] !== undefined) {
-      (this.pressed as any)[action] = true;
+    // reset inputs because we only listen on keyup
+    for (const k in released) {
+      if (released.hasOwnProperty(k)) {
+        released[(k as InputAction)] = false;
+      }
     }
   }
 
@@ -59,8 +65,6 @@ export default class DebugSystem implements ISystem {
     const action = MAPPING[evt.code];
     if (!action) { return; }
     evt.preventDefault();
-    if ((this.pressed as any)[action] !== undefined) {
-      (this.pressed as any)[action] = false;
-    }
+    this.released[action] = true;
   }
 }

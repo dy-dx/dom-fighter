@@ -1,5 +1,6 @@
 import {
   IAppearanceComp,
+  ICharacterDefinitionComp,
   ICharacterInputComp,
   ICharacterStateComp,
   ICombatComp,
@@ -9,10 +10,10 @@ import {
 } from "../components.js";
 
 export interface IEntity {
-  isMarkedForRemoval: boolean;
-  isSafeToRemove: boolean;
+  id: number;
 
   appearanceComp?: IAppearanceComp;
+  characterDefinitionComp?: ICharacterDefinitionComp;
   characterStateComp?: ICharacterStateComp;
   combatComp?: ICombatComp;
   inputComp?: ICharacterInputComp | IInputComp;
