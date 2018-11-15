@@ -17,18 +17,17 @@ export default class Game {
   public readonly height: number;
   public readonly width: number;
   public readonly networkSystem: NetworkSystem;
-  private simulationTick: number;
-  private updateTick: number;
-  private isPaused: boolean;
-  private entities!: IEntity[];
+  public approximateAvgRenderMs = 0;
+  public approximateAvgUpdateMs = 0;
+  private simulationTick = 0;
+  private updateTick = 0;
+  private isPaused = false;
+  private entities: IEntity[] = [];
   private inputSystems: ISystem[];
   private simulationSystems: ISystem[];
   private renderSystems: ISystem[];
 
   constructor(elem: HTMLElement, width: number, height: number) {
-    this.simulationTick = 0;
-    this.updateTick = 0;
-    this.isPaused = false;
     this.width = width;
     this.height = height;
     elem.style.width = `${width}px`;
@@ -96,6 +95,7 @@ export default class Game {
   }
 
   public update(dt: number): void {
+    const t0 = performance.now();
     this.inputSystems.forEach((s) => {
       s.update(this.entities, dt);
     });
@@ -103,12 +103,15 @@ export default class Game {
       this.tick(dt);
     }
     this.updateTick++;
+    this.approximateAvgUpdateMs += (performance.now() - t0 - this.approximateAvgUpdateMs) / 60;
   }
 
   public render(dt: number): void {
+    const t0 = performance.now();
     this.renderSystems.forEach((s) => {
       s.update(this.entities, dt);
     });
+    this.approximateAvgRenderMs += (performance.now() - t0 - this.approximateAvgRenderMs) / 60;
   }
 
   public advanceFrame(): void {

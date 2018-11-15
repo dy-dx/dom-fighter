@@ -109,12 +109,12 @@ export default class CharacterStateSystem implements ISystem {
             } else {
               physicsComp.hitbox.isActive = false;
             }
-          }
 
-          if (combatComp.hitStop > 0) {
-            combatComp.hitStop--;
-          } else {
-            stateComp.frameIndex++;
+            if (combatComp.hitStop > 0) {
+              combatComp.hitStop--;
+            } else {
+              stateComp.frameIndex++;
+            }
           }
         }
 

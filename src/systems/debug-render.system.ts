@@ -1,4 +1,4 @@
-import {CharacterState, IAppearanceComp, IPositionComp} from "../components.js";
+import {CharacterState, FacingDirection, IAppearanceComp, IPositionComp} from "../components.js";
 import Character from "../entities/character.js";
 import {IEntity} from "../entities/entity.js";
 import Game from "../game.js";
@@ -27,7 +27,7 @@ export default class DebugRenderSystem implements ISystem {
     this.gameElement = elem;
 
     const infoBoxAppearanceComp = {
-      width: 200,
+      width: 180,
       height: 60,
       zIndex: 10000,
     };
@@ -68,24 +68,27 @@ export default class DebugRenderSystem implements ISystem {
     const p1 = this.game.getP1();
     const p2 = this.game.getP2();
     const networkInfo = this.game.networkSystem.debugInfo();
-    if (networkInfo.isConnectionReady) {
-      this.infoBox.element!.textContent = [
-        `ping: ${networkInfo.roundtripLatency / 2}ms | delay: ${networkInfo.tickDelay}`,
-      ].join("\n");
-    } else {
-      this.infoBox.element!.textContent = "Waiting for connection";
-    }
+
+    const networkText = !networkInfo.isConnectionReady ? "Waiting for connection" : [
+      `delay: ${networkInfo.tickDelay} | ping: ${Math.ceil(networkInfo.roundtripLatency / 2)}ms`,
+    ].join("\n");
+
+    this.infoBox.element!.textContent = [
+      networkText,
+      `update: ${this.game.approximateAvgUpdateMs.toFixed(1)}ms`,
+      `render: ${this.game.approximateAvgRenderMs.toFixed(1)}ms`,
+    ].join("\n");
 
     this.p1InfoBox.element!.textContent = this.displayCharacterInfo(p1);
     this.p2InfoBox.element!.textContent = this.displayCharacterInfo(p2);
   }
 
   private displayCharacterInfo(c: Character): string {
+    const stateComp = c.characterStateComp;
     return [
-      `p1: ${c.characterStateComp.health}hp | ${c.positionComp.x},${c.positionComp.y}`,
-      `state: ${CharacterState[c.characterStateComp.state]}`,
-      `hitstop: ${c.combatComp.hitStop}`,
-      `hitstun: ${c.combatComp.hitStun}`,
+      `${stateComp.health}hp | ${c.positionComp.x},${c.positionComp.y} | ${FacingDirection[stateComp.facingDirection]}`,
+      `hitstop: ${c.combatComp.hitStop} | hitstun: ${c.combatComp.hitStun}`,
+      `${CharacterState[stateComp.state]} [${stateComp.frameIndex}]`,
     ].join("\n");
   }
 
