@@ -72,7 +72,12 @@ export default class Game {
     return this.p2;
   }
 
+  public areDebugControlsAllowed(): boolean {
+    return !this.networkSystem.isConnectionReady;
+  }
+
   public resetSimulation() {
+    this.isPaused = false;
     this.simulationTick = 0;
     this.entities = [];
     const stage = new Stage(this.width, this.height);

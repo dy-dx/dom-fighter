@@ -1,4 +1,4 @@
-import {InputAction, IInputComp} from "../components.js";
+import {IInputComp, InputAction} from "../components.js";
 import {IEntity} from "../entities/entity.js";
 import Game from "../game.js";
 import deepClone from "../util/deep-clone.js";
@@ -34,6 +34,8 @@ export default class DebugSystem implements ISystem {
   }
 
   public update(entities: IEntity[], dt: number): void {
+    if (!this.game.areDebugControlsAllowed()) { return; }
+
     const released = this.released;
 
     if (released.pause) {
