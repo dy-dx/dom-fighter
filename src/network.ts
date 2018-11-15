@@ -22,7 +22,6 @@ export default class Network {
   public clientId: string;
   public peerId: string | null;
   public isHost: boolean;
-  public isReady: boolean;
   private peer: Peer;
   private connection: Peer.DataConnection | null;
   private onMessageCallback: OnMessageCallback;
@@ -31,7 +30,6 @@ export default class Network {
   constructor({onMessageCallback, onReadyCallback, clientId, peerId, localPort}: IContructorParams) {
     this.onMessageCallback = onMessageCallback;
     this.onReadyCallback = onReadyCallback;
-    this.isReady = false;
 
     this.clientId = clientId || `df-${Math.random().toString(36).substring(2, 9)}`;
     this.peerId = peerId || null;
@@ -69,7 +67,6 @@ export default class Network {
 
   private onOpen(id: string): void {
     this.connection!.on("data", this.onMessage.bind(this));
-    this.isReady = true;
     this.onReadyCallback();
   }
 

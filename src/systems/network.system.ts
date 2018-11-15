@@ -24,9 +24,12 @@ interface IInputUpdate {
 export interface INetworkSystemDebugInfo {
   tickDelay: number;
   roundtripLatency: number;
+  isConnectionReady: boolean;
+  isSimulationReady: boolean;
 }
 
 export default class NetworkSystem implements ISystem {
+  public isConnectionReady: boolean;
   public isSimulationReady: boolean;
   public pingInterval = 240;
   private game: Game;
@@ -63,21 +66,28 @@ export default class NetworkSystem implements ISystem {
       this.clientInputs.push({tick: i, inputComp: fakeInputComp});
       this.remoteInputs.push({tick: i, inputComp: fakeInputComp});
     }
-    this.isSimulationReady = false;
+    this.isConnectionReady = false;
+    // Initialize to true so the player can do stuff while waiting for a connection
+    // (we reset the simulation when the connection begins)
+    this.isSimulationReady = true;
   }
 
   public debugInfo(): INetworkSystemDebugInfo {
     return {
+      isSimulationReady: this.isSimulationReady,
+      isConnectionReady: this.isConnectionReady,
       tickDelay: this.tickDelay,
       roundtripLatency: this.roundtripLatency,
     };
   }
 
   public update(entities: IEntity[], dt: number): void {
-    this.isSimulationReady = false;
-    if (!this.network.isReady) {
+    if (!this.isConnectionReady) {
       return;
     }
+    // Stall the game simulation unless we've received the necessary inputs
+    this.isSimulationReady = false;
+
     let clientCharacter: ICharacterEntity;
     let remoteCharacter: ICharacterEntity;
     const simulationTick = this.game.getSimulationTick();
@@ -146,6 +156,8 @@ export default class NetworkSystem implements ISystem {
   }
 
   private onReady() {
+    this.isConnectionReady = true;
+    this.game.resetSimulation();
     this.sendChat(`hello from ${this.network.clientId}`);
     this.sendPing();
   }

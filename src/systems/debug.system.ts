@@ -39,7 +39,7 @@ export default class DebugSystem implements ISystem {
     if (released.pause) {
       this.game.togglePause();
     } else if (released.reset) {
-      this.game.resetEntities();
+      this.game.resetSimulation();
     } else if (released.nextFrame) {
       this.game.advanceFrame();
     } else if (released.saveState) {

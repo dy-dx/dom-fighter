@@ -68,9 +68,13 @@ export default class DebugRenderSystem implements ISystem {
     const p1 = this.game.getP1();
     const p2 = this.game.getP2();
     const networkInfo = this.game.networkSystem.debugInfo();
-    this.infoBox.element!.textContent = [
-      `ping: ${networkInfo.roundtripLatency / 2}ms | delay: ${networkInfo.tickDelay}`,
-    ].join("\n");
+    if (networkInfo.isConnectionReady) {
+      this.infoBox.element!.textContent = [
+        `ping: ${networkInfo.roundtripLatency / 2}ms | delay: ${networkInfo.tickDelay}`,
+      ].join("\n");
+    } else {
+      this.infoBox.element!.textContent = "Waiting for connection";
+    }
 
     this.p1InfoBox.element!.textContent = this.displayCharacterInfo(p1);
     this.p2InfoBox.element!.textContent = this.displayCharacterInfo(p2);

@@ -36,7 +36,7 @@ export default class Game {
     elem.style.width = `${width}px`;
     elem.style.height = `${height}px`;
 
-    this.resetEntities();
+    this.resetSimulation();
 
     this.networkSystem = new NetworkSystem(this);
     this.systems = [
@@ -72,10 +72,12 @@ export default class Game {
     return this.p2;
   }
 
-  public resetEntities() {
+  public resetSimulation() {
+    this.simulationTick = 0;
     this.entities = [];
     const stage = new Stage(this.width, this.height);
     this.p1 = new Character(CharacterSide.P1, this.width / 2 - this.width / 4);
+    this.p1.isControlledByClient = true;
     this.p2 = new Character(CharacterSide.P2, this.width / 2 + this.width / 4);
 
     this.entities.push(stage);
