@@ -20,10 +20,8 @@ export default class Game {
   private simulationTick: number;
   private updateTick: number;
   private isPaused: boolean;
-  private p1!: Character;
-  private p2!: Character;
   private entities!: IEntity[];
-  private systems: ISystem[];
+  private inputSystems: ISystem[];
   private simulationSystems: ISystem[];
   private renderSystems: ISystem[];
 
@@ -39,7 +37,7 @@ export default class Game {
     this.resetSimulation();
 
     this.networkSystem = new NetworkSystem(this);
-    this.systems = [
+    this.inputSystems = [
       new InputSystem(document),
       this.networkSystem,
       new DebugSystem(this, document),
@@ -53,7 +51,6 @@ export default class Game {
       new RenderSystem(elem),
       new DebugRenderSystem(this, elem),
     ];
-
   }
 
   public getSimulationTick(): number {
@@ -65,39 +62,41 @@ export default class Game {
   }
 
   public getP1(): Character {
-    return this.p1;
+    // pretty dumb but it'll work for now
+    return this.entities[0] as Character;
   }
 
   public getP2(): Character {
-    return this.p2;
+    // pretty dumb but it'll work for now
+    return this.entities[1] as Character;
   }
 
   public areDebugControlsAllowed(): boolean {
     return !this.networkSystem.isConnectionReady;
   }
 
-  public resetSimulation() {
+  public resetSimulation(): void {
     this.isPaused = false;
     this.simulationTick = 0;
     this.entities = [];
     const stage = new Stage(this.width, this.height);
-    this.p1 = new Character(CharacterSide.P1, this.width / 2 - this.width / 4);
-    this.p1.isControlledByClient = true;
-    this.p2 = new Character(CharacterSide.P2, this.width / 2 + this.width / 4);
+    const p1 = new Character(CharacterSide.P1, this.width / 2 - this.width / 4);
+    p1.isControlledByClient = true;
+    const p2 = new Character(CharacterSide.P2, this.width / 2 + this.width / 4);
 
+    this.entities.push(p1);
+    this.entities.push(p2);
     this.entities.push(stage);
-    this.entities.push(this.p1);
-    this.entities.push(this.p2);
     // fixme, terrible hack
     this.entities.forEach((e, i) => e.id = i);
   }
 
-  public togglePause() {
+  public togglePause(): void {
     this.isPaused = !this.isPaused;
   }
 
-  public update(dt: number) {
-    this.systems.forEach((s) => {
+  public update(dt: number): void {
+    this.inputSystems.forEach((s) => {
       s.update(this.entities, dt);
     });
     if (!this.isPaused && this.networkSystem.isSimulationReady) {
@@ -106,13 +105,13 @@ export default class Game {
     this.updateTick++;
   }
 
-  public render(dt: number) {
+  public render(dt: number): void {
     this.renderSystems.forEach((s) => {
       s.update(this.entities, dt);
     });
   }
 
-  public advanceFrame() {
+  public advanceFrame(): void {
     if (!this.isPaused) {
       return;
     }
@@ -127,7 +126,7 @@ export default class Game {
     this.entities = entities;
   }
 
-  private tick(dt: number) {
+  private tick(dt: number): void {
     this.simulationSystems.forEach((s) => {
       s.update(this.entities, dt);
     });
