@@ -10,7 +10,7 @@ export enum MessageType {
 
 type OnMessageCallback = (type: MessageType, data: any) => void;
 type OnReadyCallback = () => void;
-interface IContructorParams {
+interface IConstructorParams {
   onReadyCallback: OnReadyCallback;
   onMessageCallback: OnMessageCallback;
   clientId: string | null;
@@ -27,7 +27,7 @@ export default class Network {
   private onMessageCallback: OnMessageCallback;
   private onReadyCallback: OnReadyCallback;
 
-  constructor({onMessageCallback, onReadyCallback, clientId, peerId, localPort}: IContructorParams) {
+  constructor({onMessageCallback, onReadyCallback, clientId, peerId, localPort}: IConstructorParams) {
     this.onMessageCallback = onMessageCallback;
     this.onReadyCallback = onReadyCallback;
 
