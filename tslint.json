@@ -6,7 +6,8 @@
     "jsRules": {},
     "linterOptions": {
         "exclude": [
-            "**/*.js"
+            "dist/**",
+            "node_modules/**"
         ]
     },
     "rules": {

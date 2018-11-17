@@ -4,13 +4,17 @@
   "private": true,
   "scripts": {
     "clean": "git clean -fdX dist",
-    "dev": "npm run clean && tsc -w & browser-sync start --server --files '*.css' '**/*.html' 'dist/**/*'"
+    "dev": "npm run clean && tsc -w & browser-sync start --server --files '*.css' '**/*.html' 'dist/**/*'",
+    "test": "jest"
   },
   "devDependencies": {
+    "@types/jest": "^23.3.9",
     "browser-sync": "^2.26.3",
+    "jest": "^23.6.0",
     "node-notifier": "^5.3.0",
     "node-turn": "0.0.4",
     "peer": "^0.2.10",
+    "ts-jest": "^23.10.4",
     "tsc-watch": "dy-dx/tsc-watch#emit-error-lines",
     "tslint": "^5.11.0",
     "typescript": "^3.1.4"
