@@ -52,6 +52,8 @@ export interface ICharacterDefinitionComp {
   name: string;
   maxHealth: number;
   walkSpeed: number;
+  idlePushbox: IHitbox;
+  idleHurtbox: IHitbox;
 }
 
 export enum FacingDirection {

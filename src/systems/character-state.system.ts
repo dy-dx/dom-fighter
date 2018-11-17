@@ -61,6 +61,10 @@ export default class CharacterStateSystem implements ISystem {
         } else {
           stateComp.facingDirection = FacingDirection.Right;
         }
+        const isFacingLeft = stateComp.facingDirection === FacingDirection.Left;
+
+        Object.assign(physicsComp.pushbox, e.characterDefinitionComp.idlePushbox);
+        Object.assign(physicsComp.hurtbox, e.characterDefinitionComp.idleHurtbox);
 
         if (combatComp.hitStun > 0) {
           if (stateComp.state !== CharacterState.Hitstun) {
@@ -95,19 +99,25 @@ export default class CharacterStateSystem implements ISystem {
           } else {
             const frameData = attackData.frames[stateComp.frameIndex];
 
-            if (frameData.hitbox) {
+            if (frameData.hitboxIndex !== undefined) {
               physicsComp.hitbox.isActive = true;
-              Object.assign(physicsComp.hitbox, frameData.hitbox);
-              if (stateComp.facingDirection === FacingDirection.Left) {
-                physicsComp.hitbox.x = physicsComp.hitbox.x * -1 - physicsComp.hitbox.width;
-              }
-
+              Object.assign(physicsComp.hitbox, attackData.hitboxes[frameData.hitboxIndex]);
               // if this is the first active frame, enable damage
-              if (!attackData.frames[stateComp.frameIndex - 1].hitbox) {
+              if (attackData.frames[stateComp.frameIndex - 1].hitboxIndex === undefined) {
                 combatComp.hasHit = false;
               }
             } else {
               physicsComp.hitbox.isActive = false;
+            }
+
+            if (frameData.pushboxIndex !== undefined) {
+              Object.assign(physicsComp.pushbox, attackData.pushboxes[frameData.pushboxIndex]);
+            }
+            if (frameData.hurtboxIndex !== undefined) {
+              Object.assign(physicsComp.hurtbox, attackData.hurtboxes[frameData.hurtboxIndex]);
+            }
+            if (frameData.x) {
+              positionComp.x += isFacingLeft ? -frameData.x : frameData.x;
             }
 
             if (combatComp.hitStop > 0) {
@@ -116,6 +126,12 @@ export default class CharacterStateSystem implements ISystem {
               stateComp.frameIndex++;
             }
           }
+        }
+
+        if (isFacingLeft) {
+          physicsComp.hitbox.x = physicsComp.hitbox.x * -1 - physicsComp.hitbox.width;
+          physicsComp.pushbox.x = physicsComp.pushbox.x * -1 - physicsComp.pushbox.width;
+          physicsComp.hurtbox.x = physicsComp.hurtbox.x * -1 - physicsComp.hurtbox.width;
         }
 
         if (pressed.left) {

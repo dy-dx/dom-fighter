@@ -26,7 +26,7 @@ export default class CombatSystem implements ISystem {
         return;
       }
 
-      physicsEntities.filter((o) => e !== o && o.physicsComp.hurtbox).forEach((o) => {
+      physicsEntities.filter((o) => e !== o && o.physicsComp.hurtbox.isActive).forEach((o) => {
         if (o.characterStateComp && this.overlaps(e, o)) {
           o.characterStateComp.health -= Math.min(attackData.damage, o.characterStateComp.health);
           // prevent attack from dealing more damage on subsequent frames

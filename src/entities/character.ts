@@ -51,6 +51,20 @@ export default class Character implements IEntity {
       name: "Blah",
       maxHealth: 1000,
       walkSpeed: 4,
+      idlePushbox: {
+        isActive: true,
+        width: 100,
+        height: 180,
+        x: -50,
+        y: 0,
+      },
+      idleHurtbox: {
+        isActive: true,
+        width: 150,
+        height: 220,
+        x: -75,
+        y: 0,
+      },
     };
 
     this.characterStateComp = {
@@ -84,16 +98,16 @@ export default class Character implements IEntity {
       },
       hurtbox: {
         isActive: true,
-        width: 150,
-        height: 220,
-        x: -75,
+        width: 10,
+        height: 10,
+        x: 0,
         y: 0,
       },
       pushbox: {
         isActive: true,
-        width: 100,
-        height: 180,
-        x: -50,
+        width: 10,
+        height: 10,
+        x: 0,
         y: 0,
       },
     };
