@@ -53,6 +53,7 @@ export default class CharacterStateSystem implements ISystem {
           // fixme
           physicsComp.hurtbox.isActive = false;
           physicsComp.pushbox.isActive = false;
+          physicsComp.hitbox.isActive = false;
           return;
         }
 
@@ -68,7 +69,7 @@ export default class CharacterStateSystem implements ISystem {
 
         if (combatComp.hitStun > 0) {
           if (stateComp.state !== CharacterState.Hitstun) {
-            this.setState(stateComp, CharacterState.Hitstun);
+            this.enterHitstun(stateComp, physicsComp);
           }
         }
 
@@ -102,6 +103,9 @@ export default class CharacterStateSystem implements ISystem {
             if (frameData.hitboxIndex !== undefined) {
               physicsComp.hitbox.isActive = true;
               Object.assign(physicsComp.hitbox, attackData.hitboxes[frameData.hitboxIndex]);
+              if (isFacingLeft) {
+                physicsComp.hitbox.x = physicsComp.hitbox.x * -1 - physicsComp.hitbox.width;
+              }
               // if this is the first active frame, enable damage
               if (attackData.frames[stateComp.frameIndex - 1].hitboxIndex === undefined) {
                 combatComp.hasHit = false;
@@ -129,7 +133,6 @@ export default class CharacterStateSystem implements ISystem {
         }
 
         if (isFacingLeft) {
-          physicsComp.hitbox.x = physicsComp.hitbox.x * -1 - physicsComp.hitbox.width;
           physicsComp.pushbox.x = physicsComp.pushbox.x * -1 - physicsComp.pushbox.width;
           physicsComp.hurtbox.x = physicsComp.hurtbox.x * -1 - physicsComp.hurtbox.width;
         }
@@ -169,6 +172,12 @@ export default class CharacterStateSystem implements ISystem {
       physicsComp.velocityX = 0;
       stateComp.frameIndex = 0;
     }
+  }
+
+  private enterHitstun(stateComp: ICharacterStateComp, physicsComp: IPhysicsComp) {
+    this.setState(stateComp, CharacterState.Hitstun);
+    stateComp.frameIndex = 0;
+    physicsComp.hitbox.isActive = false;
   }
 
   private endAttack(stateComp: ICharacterStateComp, combatComp: ICombatComp) {
