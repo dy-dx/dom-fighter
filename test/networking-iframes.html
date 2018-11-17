@@ -15,7 +15,7 @@
             frame.src = src;
             iframeContainer.appendChild(frame);
             frame.contentWindow.addEventListener('DOMContentLoaded', () => {
-                const {scrollWidth, scrollHeight} = frame.contentWindow.document.body;
+                const {scrollWidth, scrollHeight} = frame.contentWindow.document.getElementById('main');
                 [frame.width, frame.height] = [scrollWidth, scrollHeight];
             });
         };
