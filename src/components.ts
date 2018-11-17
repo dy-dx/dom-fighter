@@ -21,15 +21,7 @@ export type IInputComp = {
   [K in InputAction]: boolean
 };
 
-export enum HitboxType {
-  Hitbox,
-  Hurtbox,
-  Pushbox,
-  Blockbox,
-}
-
 export interface IHitbox {
-  type: HitboxType;
   isActive: boolean;
   width: number;
   height: number;

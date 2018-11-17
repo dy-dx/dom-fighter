@@ -1,4 +1,4 @@
-import {HitboxType, IAppearanceComp, IHitbox, IPhysicsComp, IPositionComp} from "../components.js";
+import {IAppearanceComp, IHitbox, IPhysicsComp, IPositionComp} from "../components.js";
 import {IEntity} from "../entities/entity.js";
 import ISystem from "./system.js";
 
@@ -26,8 +26,12 @@ export default class RenderSystem implements ISystem {
         this.setStyles(elem, e.appearanceComp, e.positionComp);
 
         if (e.physicsComp) {
-          [e.physicsComp.pushbox, e.physicsComp.hurtbox, e.physicsComp.hitbox].forEach((hitbox) => {
-            const elementId = `${elem.id}-${hitbox.type}`;
+          [
+            { hitbox: e.physicsComp.pushbox, type: "pushbox" },
+            { hitbox: e.physicsComp.hurtbox, type: "hurtbox" },
+            { hitbox: e.physicsComp.hitbox, type: "hitbox" },
+          ].forEach(({hitbox, type}) => {
+            const elementId = `${elem.id}-${type}`;
             const hitboxElem = document.getElementById(elementId);
             if (!hitboxElem) { throw new Error(`No element with id: ${elementId}`); }
             this.setHitboxDimensions(hitboxElem, hitbox);
@@ -59,19 +63,19 @@ export default class RenderSystem implements ISystem {
   private createDebugBoxes(parentElem: HTMLElement, physicsComp: IPhysicsComp): void {
     const boxColors = [
       {
-        id: `${parentElem.id}-${HitboxType.Pushbox}`,
+        id: `${parentElem.id}-pushbox`,
         hitbox: physicsComp.pushbox,
         borderColor: "blue",
         backgroundColor: "rgba(0, 0, 255, 0.25)",
       },
       {
-        id: `${parentElem.id}-${HitboxType.Hurtbox}`,
+        id: `${parentElem.id}-hurtbox`,
         hitbox: physicsComp.hurtbox,
         borderColor: "green",
         backgroundColor: "rgba(0, 255, 0, 0.25)",
       },
       {
-        id: `${parentElem.id}-${HitboxType.Hitbox}`,
+        id: `${parentElem.id}-hitbox`,
         hitbox: physicsComp.hitbox,
         borderColor: "red",
         backgroundColor: "rgba(255, 0, 0, 0.25)",
@@ -80,7 +84,6 @@ export default class RenderSystem implements ISystem {
       {
         id: `${parentElem.id}-position`,
         hitbox: {
-          type: HitboxType.Hitbox,
           isActive: true,
           width: 3,
           height: 12,

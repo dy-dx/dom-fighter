@@ -2,7 +2,6 @@ import {
   CharacterSide,
   CharacterState,
   FacingDirection,
-  HitboxType,
   IAppearanceComp,
   ICharacterDefinitionComp,
   ICharacterInputComp,
@@ -77,7 +76,6 @@ export default class Character implements IEntity {
       velocityX: 0,
       velocityY: 0,
       hitbox: {
-        type: HitboxType.Hitbox,
         isActive: false,
         width: 10,
         height: 10,
@@ -85,15 +83,13 @@ export default class Character implements IEntity {
         y: 0,
       },
       hurtbox: {
-        type: HitboxType.Hurtbox,
         isActive: true,
-        width: 180,
+        width: 150,
         height: 220,
-        x: -90,
+        x: -75,
         y: 0,
       },
       pushbox: {
-        type: HitboxType.Pushbox,
         isActive: true,
         width: 100,
         height: 180,

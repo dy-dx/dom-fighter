@@ -2,7 +2,6 @@ import {CharacterSide} from "./components.js";
 import Character from "./entities/character.js";
 import {IEntity} from "./entities/entity.js";
 import Stage from "./entities/stage.js";
-import Wall from "./entities/wall.js";
 import CharacterStateSystem from "./systems/character-state.system.js";
 import CombatSystem from "./systems/combat.system.js";
 import DebugRenderSystem from "./systems/debug-render.system.js";
@@ -44,7 +43,7 @@ export default class Game {
     ];
     this.simulationSystems = [
       new CharacterStateSystem(this),
-      new PhysicsSystem(),
+      new PhysicsSystem(this.width),
       new CombatSystem(),
     ];
     this.renderSystems = [
@@ -86,8 +85,6 @@ export default class Game {
     this.entities.push(p1);
     this.entities.push(p2);
     this.entities.push(new Stage(this.width, this.height));
-    this.entities.push(new Wall(0, false));
-    this.entities.push(new Wall(this.width, true));
     // fixme, terrible hack
     this.entities.forEach((e, i) => e.id = i);
   }

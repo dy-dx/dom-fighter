@@ -8,8 +8,16 @@ interface IPhysicsEntity extends IEntity {
 }
 
 export default class PhysicsSystem implements ISystem {
+  private gameWidth: number;
+
+  constructor(gameWidth: number) {
+    this.gameWidth = gameWidth;
+  }
+
   public update(entities: IEntity[], dt: number): void {
     const physicsEntities = entities.filter((e): e is IPhysicsEntity => !!e.physicsComp);
+    // fixme?
+    const pushboxEntities = physicsEntities.filter((e) => e.physicsComp.pushbox.isActive);
 
     physicsEntities.forEach((e) => {
       const p: IPositionComp = e.positionComp;
@@ -21,9 +29,15 @@ export default class PhysicsSystem implements ISystem {
 
       if (!ph.isMoveable || !ph.pushbox.isActive) { return; }
 
+      // Clamp to stage bounds
+      const minX = -ph.pushbox.x;
+      const maxX = this.gameWidth - ph.pushbox.x - ph.pushbox.width;
+      p.x = Math.max(p.x, minX);
+      p.x = Math.min(p.x, maxX);
+
       // naive collision handling, resolve x only
       if (vx !== 0) {
-        physicsEntities.filter((o) => e !== o && o.physicsComp.pushbox.isActive).forEach((o) => {
+        pushboxEntities.filter((o) => e !== o).forEach((o) => {
           if (this.overlaps(e, o)) {
             const oLeft = o.positionComp.x + o.physicsComp.pushbox.x;
             if (Math.sign(vx) > 0) {
@@ -33,6 +47,10 @@ export default class PhysicsSystem implements ISystem {
             }
           }
         });
+
+        // Clamp to stage bounds again, idk
+        p.x = Math.max(p.x, minX);
+        p.x = Math.min(p.x, maxX);
       }
     });
   }
