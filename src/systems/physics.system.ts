@@ -1,5 +1,6 @@
 import {IPhysicsComp, IPositionComp} from "../components.js";
 import {IEntity} from "../entities/entity.js";
+import {hitboxOverlaps} from "../util/aabb.js";
 import ISystem from "./system.js";
 
 interface IPhysicsEntity extends IEntity {
@@ -19,14 +20,20 @@ export default class PhysicsSystem implements ISystem {
     const pushboxEntities = physicsEntities.filter((e) => e.physicsComp.pushbox.isActive);
 
     physicsEntities.forEach((e) => {
-      const p: IPositionComp = e.positionComp;
-      const ph: IPhysicsComp = e.physicsComp;
-      p.x += ph.velocityX * dt;
-      p.y += ph.velocityY * dt;
+      const pos: IPositionComp = e.positionComp;
+      const {velocityX, velocityY} = e.physicsComp;
+      pos.x += velocityX * dt;
+      pos.y += velocityY * dt;
      });
 
     pushboxEntities.forEach((e) => {
-      const p: IPositionComp = e.positionComp;
+      const pos: IPositionComp = e.positionComp;
+      const pushbox = e.physicsComp.pushbox;
+      // Clamp to stage bounds
+      const minX = -pushbox.x + 0; // +0 to avoid negative zero issue when using Object.is()
+      const maxX = this.gameWidth - pushbox.x - pushbox.width;
+      pos.x = Math.max(pos.x, minX);
+      pos.x = Math.min(pos.x, maxX);
 
       pushboxEntities.filter((o) => e !== o).forEach((o) => {
         if (!this.overlaps(e, o)) { return; }
@@ -36,57 +43,43 @@ export default class PhysicsSystem implements ISystem {
         const oLeft = o.positionComp.x + o.physicsComp.pushbox.x;
         const oRight = oLeft + o.physicsComp.pushbox.width;
 
-        if (!(right > oLeft && left < oRight)) { return; }
-
-        if (right < oRight) {
+        if (right <= oRight) {
           const distance = right - oLeft;
-          p.x -= Math.floor(distance / 2);
-          o.positionComp.x += Math.ceil(distance / 2);
-        } else if (left > oLeft) {
+          if (pos.x <= minX) {
+            // we're already clamped to the stage edge, so move opponent only
+            o.positionComp.x += distance;
+          } else {
+            e.positionComp.x -= Math.floor(distance / 2);
+            o.positionComp.x += Math.ceil(distance / 2);
+          }
+        } else if (left >= oLeft) {
           const distance = oRight - left;
-          p.x += Math.floor(distance / 2);
-          o.positionComp.x -= Math.ceil(distance / 2);
-        } else {
-          // todo
+          if (pos.x >= maxX) {
+            // we're already clamped to the stage edge, so move opponent only
+            o.positionComp.x -= distance;
+          } else {
+            e.positionComp.x += Math.floor(distance / 2);
+            o.positionComp.x -= Math.ceil(distance / 2);
+          }
+        } else if (left === oLeft && right === oRight) {
+          // pushboxes occupy the same space, just move toward middle of stage
+          // this is not a real solution but it's good enough for now
+          if (e.positionComp.x >= this.gameWidth / 2) {
+            e.positionComp.x -= e.physicsComp.pushbox.width;
+          } else {
+            e.positionComp.x += e.physicsComp.pushbox.width;
+          }
         }
       });
-    });
-
-    pushboxEntities.forEach((e) => {
-      const p: IPositionComp = e.positionComp;
-      const ph: IPhysicsComp = e.physicsComp;
-      // Clamp to stage bounds
-      const minX = -ph.pushbox.x;
-      const maxX = this.gameWidth - ph.pushbox.x - ph.pushbox.width;
-      p.x = Math.max(p.x, minX);
-      p.x = Math.min(p.x, maxX);
     });
   }
 
   private overlaps(a: IPhysicsEntity, b: IPhysicsEntity): boolean {
-      const bounds = {
-        left: a.positionComp.x + a.physicsComp.pushbox.x,
-        top: a.positionComp.y + a.physicsComp.pushbox.height,
-        right: 0,
-        bottom: 0,
-      };
-      bounds.right = bounds.left + a.physicsComp.pushbox.width;
-      bounds.bottom = bounds.top - a.physicsComp.pushbox.height;
-
-      const compare = {
-        left: b.positionComp.x + b.physicsComp.pushbox.x,
-        top: b.positionComp.y + b.physicsComp.pushbox.height,
-        right: 0,
-        bottom: 0,
-      };
-      compare.right = compare.left + b.physicsComp.pushbox.width;
-      compare.bottom = compare.top - b.physicsComp.pushbox.height;
-
-      return !(
-        compare.right <= bounds.left
-        || compare.left >= bounds.right
-        || compare.bottom >= bounds.top
-        || compare.top <= bounds.bottom
-      );
-    }
+    return hitboxOverlaps(
+      a.positionComp,
+      a.physicsComp.pushbox,
+      b.positionComp,
+      b.physicsComp.pushbox,
+    );
+  }
 }

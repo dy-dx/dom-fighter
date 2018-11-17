@@ -5,6 +5,7 @@ import {
   IPositionComp,
 } from "../components.js";
 import {IEntity} from "../entities/entity.js";
+import {hitboxOverlaps} from "../util/aabb.js";
 import ISystem from "./system.js";
 
 import attackData from "../data/attack.js";
@@ -43,29 +44,10 @@ export default class CombatSystem implements ISystem {
   }
 
   private overlaps(a: ICombatEntity, b: ICombatEntity): boolean {
-      const bounds = {
-        left: a.positionComp.x + a.physicsComp.hitbox.x,
-        top: a.positionComp.y + a.physicsComp.hitbox.height,
-        right: 0,
-        bottom: 0,
-      };
-      bounds.right = bounds.left + a.physicsComp.hitbox.width;
-      bounds.bottom = bounds.top - a.physicsComp.hitbox.height;
-
-      const compare = {
-        left: b.positionComp.x + b.physicsComp.hurtbox.x,
-        top: b.positionComp.y + b.physicsComp.hurtbox.height,
-        right: 0,
-        bottom: 0,
-      };
-      compare.right = compare.left + b.physicsComp.hurtbox.width;
-      compare.bottom = compare.top - b.physicsComp.hurtbox.height;
-
-      return !(
-        compare.right <= bounds.left
-        || compare.left >= bounds.right
-        || compare.bottom >= bounds.top
-        || compare.top <= bounds.bottom
-      );
-    }
+    return hitboxOverlaps(a.positionComp,
+      a.physicsComp.hitbox,
+      b.positionComp,
+      b.physicsComp.hurtbox,
+    );
+  }
 }
