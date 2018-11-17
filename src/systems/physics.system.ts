@@ -16,42 +16,50 @@ export default class PhysicsSystem implements ISystem {
 
   public update(entities: IEntity[], dt: number): void {
     const physicsEntities = entities.filter((e): e is IPhysicsEntity => !!e.physicsComp);
-    // fixme?
     const pushboxEntities = physicsEntities.filter((e) => e.physicsComp.pushbox.isActive);
 
     physicsEntities.forEach((e) => {
       const p: IPositionComp = e.positionComp;
       const ph: IPhysicsComp = e.physicsComp;
-      const {velocityX: vx, velocityY: vy} = ph;
+      p.x += ph.velocityX * dt;
+      p.y += ph.velocityY * dt;
+     });
 
-      p.x += vx * dt;
-      p.y += vy * dt;
+    pushboxEntities.forEach((e) => {
+      const p: IPositionComp = e.positionComp;
 
-      if (!ph.isMoveable || !ph.pushbox.isActive) { return; }
+      pushboxEntities.filter((o) => e !== o).forEach((o) => {
+        if (!this.overlaps(e, o)) { return; }
 
+        const left = e.positionComp.x + e.physicsComp.pushbox.x;
+        const right = left + e.physicsComp.pushbox.width;
+        const oLeft = o.positionComp.x + o.physicsComp.pushbox.x;
+        const oRight = oLeft + o.physicsComp.pushbox.width;
+
+        if (!(right > oLeft && left < oRight)) { return; }
+
+        if (right < oRight) {
+          const distance = right - oLeft;
+          p.x -= Math.floor(distance / 2);
+          o.positionComp.x += Math.ceil(distance / 2);
+        } else if (left > oLeft) {
+          const distance = oRight - left;
+          p.x += Math.floor(distance / 2);
+          o.positionComp.x -= Math.ceil(distance / 2);
+        } else {
+          // todo
+        }
+      });
+    });
+
+    pushboxEntities.forEach((e) => {
+      const p: IPositionComp = e.positionComp;
+      const ph: IPhysicsComp = e.physicsComp;
       // Clamp to stage bounds
       const minX = -ph.pushbox.x;
       const maxX = this.gameWidth - ph.pushbox.x - ph.pushbox.width;
       p.x = Math.max(p.x, minX);
       p.x = Math.min(p.x, maxX);
-
-      // naive collision handling, resolve x only
-      if (vx !== 0) {
-        pushboxEntities.filter((o) => e !== o).forEach((o) => {
-          if (this.overlaps(e, o)) {
-            const oLeft = o.positionComp.x + o.physicsComp.pushbox.x;
-            if (Math.sign(vx) > 0) {
-              p.x = oLeft - e.physicsComp.pushbox.width - e.physicsComp.pushbox.x;
-            } else {
-              p.x = oLeft + o.physicsComp.pushbox.width - e.physicsComp.pushbox.x;
-            }
-          }
-        });
-
-        // Clamp to stage bounds again, idk
-        p.x = Math.max(p.x, minX);
-        p.x = Math.min(p.x, maxX);
-      }
     });
   }
 
