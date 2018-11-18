@@ -36,6 +36,7 @@ export interface IPhysicsComp {
   pushbox: IHitbox;
   hurtbox: IHitbox;
   hitbox: IHitbox;
+  blockbox: IHitbox;
 }
 
 export interface ICombatComp {
@@ -43,6 +44,7 @@ export interface ICombatComp {
   hasHit: boolean;
   hitStop: number;
   hitStun: number;
+  isInBlockbox: boolean;
   slideTime: number;
   slideSpeed: number;
   slideDirection: FacingDirection;
@@ -52,8 +54,9 @@ export interface ICharacterDefinitionComp {
   name: string;
   maxHealth: number;
   walkSpeed: number;
-  idlePushbox: IHitbox;
-  idleHurtbox: IHitbox;
+  defaultPushbox: IHitbox;
+  defaultHurtbox: IHitbox;
+  defaultBlockbox: IHitbox;
 }
 
 export enum FacingDirection {
@@ -67,6 +70,7 @@ export enum CharacterState {
   Attack,
   AttackEnd,
   Block,
+  BlockEnd,
   Blockstun,
   Hitstop,
   Hitstun,

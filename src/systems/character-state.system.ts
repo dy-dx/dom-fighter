@@ -64,13 +64,12 @@ export default class CharacterStateSystem implements ISystem {
         }
         const isFacingLeft = stateComp.facingDirection === FacingDirection.Left;
 
-        Object.assign(physicsComp.pushbox, e.characterDefinitionComp.idlePushbox);
-        Object.assign(physicsComp.hurtbox, e.characterDefinitionComp.idleHurtbox);
+        Object.assign(physicsComp.pushbox, e.characterDefinitionComp.defaultPushbox);
+        Object.assign(physicsComp.hurtbox, e.characterDefinitionComp.defaultHurtbox);
+        Object.assign(physicsComp.blockbox, e.characterDefinitionComp.defaultBlockbox);
 
         if (combatComp.hitStun > 0) {
-          if (stateComp.state !== CharacterState.Hitstun) {
-            this.enterHitstun(stateComp, physicsComp);
-          }
+          this.enterHitstun(stateComp, physicsComp);
         }
 
         if (stateComp.state === CharacterState.Hitstun) {
@@ -114,6 +113,10 @@ export default class CharacterStateSystem implements ISystem {
               physicsComp.hitbox.isActive = false;
             }
 
+            if (frameData.blockboxActive) {
+              physicsComp.blockbox.isActive = true;
+            }
+
             if (frameData.pushboxIndex !== undefined) {
               Object.assign(physicsComp.pushbox, attackData.pushboxes[frameData.pushboxIndex]);
             }
@@ -121,7 +124,11 @@ export default class CharacterStateSystem implements ISystem {
               Object.assign(physicsComp.hurtbox, attackData.hurtboxes[frameData.hurtboxIndex]);
             }
             if (frameData.x) {
-              positionComp.x += isFacingLeft ? -frameData.x : frameData.x;
+              const offsetX = isFacingLeft ? -frameData.x : frameData.x;
+              // this is intended to push you back more if you land a hit.
+              // very hacky, address this at some point
+              const offsetScale = combatComp.hasHit ? 2 : 1;
+              positionComp.x += offsetX * offsetScale;
             }
 
             if (combatComp.hitStop > 0) {
@@ -135,6 +142,17 @@ export default class CharacterStateSystem implements ISystem {
         if (isFacingLeft) {
           physicsComp.pushbox.x = physicsComp.pushbox.x * -1 - physicsComp.pushbox.width;
           physicsComp.hurtbox.x = physicsComp.hurtbox.x * -1 - physicsComp.hurtbox.width;
+          physicsComp.blockbox.x = physicsComp.blockbox.x * -1 - physicsComp.blockbox.width;
+        }
+
+        if (stateComp.state === CharacterState.Block && !combatComp.isInBlockbox) {
+          this.endBlock(stateComp, physicsComp);
+        }
+
+        if (combatComp.isInBlockbox) {
+          if ((pressed.left && !isFacingLeft) || (pressed.right && isFacingLeft)) {
+            this.enterBlock(stateComp, physicsComp);
+          }
         }
 
         if (pressed.left) {
@@ -148,6 +166,9 @@ export default class CharacterStateSystem implements ISystem {
         if (pressed.attack) {
           this.attack(stateComp, physicsComp);
         }
+
+        // reset for next tick
+        combatComp.isInBlockbox = false;
       });
   }
 
@@ -174,10 +195,23 @@ export default class CharacterStateSystem implements ISystem {
     }
   }
 
+  private enterBlock(stateComp: ICharacterStateComp, physicsComp: IPhysicsComp) {
+    if (this.setState(stateComp, CharacterState.Block)) {
+      physicsComp.velocityX = 0;
+    }
+  }
+
+  private endBlock(stateComp: ICharacterStateComp, physicsComp: IPhysicsComp) {
+    if (this.setState(stateComp, CharacterState.BlockEnd)) {
+      this.setState(stateComp, CharacterState.Stand);
+    }
+  }
+
   private enterHitstun(stateComp: ICharacterStateComp, physicsComp: IPhysicsComp) {
-    this.setState(stateComp, CharacterState.Hitstun);
-    stateComp.frameIndex = 0;
-    physicsComp.hitbox.isActive = false;
+    if (this.setState(stateComp, CharacterState.Hitstun)) {
+      stateComp.frameIndex = 0;
+      physicsComp.hitbox.isActive = false;
+    }
   }
 
   private endAttack(stateComp: ICharacterStateComp, combatComp: ICombatComp) {
@@ -207,7 +241,12 @@ export default class CharacterStateSystem implements ISystem {
   }
   private canSetState(stateComp: ICharacterStateComp, targetState: CharacterState): boolean {
     if (targetState === CharacterState.Stand) {
-      return [CharacterState.Walk, CharacterState.HitstunEnd, CharacterState.AttackEnd].includes(stateComp.state);
+      return [
+        CharacterState.Walk,
+        CharacterState.HitstunEnd,
+        CharacterState.AttackEnd,
+        CharacterState.BlockEnd,
+      ].includes(stateComp.state);
     } else if (targetState === CharacterState.Walk) {
       return [CharacterState.Walk, CharacterState.Stand].includes(stateComp.state);
     } else if (targetState === CharacterState.Attack) {
@@ -217,7 +256,12 @@ export default class CharacterStateSystem implements ISystem {
     } else if (targetState === CharacterState.HitstunEnd) {
       return [CharacterState.Hitstun].includes(stateComp.state);
     } else if (targetState === CharacterState.Hitstun) {
-      return true;
+      // can't get hit if you're blocking
+      return ![CharacterState.Block].includes(stateComp.state);
+    } else if (targetState === CharacterState.Block) {
+      return [CharacterState.Walk, CharacterState.Stand].includes(stateComp.state);
+    } else if (targetState === CharacterState.BlockEnd) {
+      return [CharacterState.Block].includes(stateComp.state);
     }
     return false;
   }

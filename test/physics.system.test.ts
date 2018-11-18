@@ -33,6 +33,7 @@ const createEntity = ({
       },
       hitbox: {isActive: false, width: 2, height: 2, x: 0, y: 0},
       hurtbox: {isActive: false, width: 2, height: 2, x: 0, y: 0},
+      blockbox: {isActive: false, width: 2, height: 2, x: 0, y: 0},
     },
   };
 };

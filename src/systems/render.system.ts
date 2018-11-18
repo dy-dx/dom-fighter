@@ -30,6 +30,7 @@ export default class RenderSystem implements ISystem {
             { hitbox: e.physicsComp.pushbox, type: "pushbox" },
             { hitbox: e.physicsComp.hurtbox, type: "hurtbox" },
             { hitbox: e.physicsComp.hitbox, type: "hitbox" },
+            { hitbox: e.physicsComp.blockbox, type: "blockbox" },
           ].forEach(({hitbox, type}) => {
             const elementId = `${elem.id}-${type}`;
             const hitboxElem = document.getElementById(elementId);
@@ -63,16 +64,22 @@ export default class RenderSystem implements ISystem {
   private createDebugBoxes(parentElem: HTMLElement, physicsComp: IPhysicsComp): void {
     const boxColors = [
       {
-        id: `${parentElem.id}-pushbox`,
-        hitbox: physicsComp.pushbox,
-        borderColor: "blue",
-        backgroundColor: "rgba(0, 0, 255, 0.25)",
+        id: `${parentElem.id}-blockbox`,
+        hitbox: physicsComp.blockbox,
+        borderColor: "gray",
+        backgroundColor: "rgba(80, 80, 80, 0.25)",
       },
       {
         id: `${parentElem.id}-hurtbox`,
         hitbox: physicsComp.hurtbox,
         borderColor: "green",
         backgroundColor: "rgba(0, 255, 0, 0.25)",
+      },
+      {
+        id: `${parentElem.id}-pushbox`,
+        hitbox: physicsComp.pushbox,
+        borderColor: "blue",
+        backgroundColor: "rgba(0, 0, 255, 0.25)",
       },
       {
         id: `${parentElem.id}-hitbox`,

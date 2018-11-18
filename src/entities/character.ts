@@ -51,19 +51,26 @@ export default class Character implements IEntity {
       name: "Blah",
       maxHealth: 1000,
       walkSpeed: 4,
-      idlePushbox: {
+      defaultPushbox: {
         isActive: true,
         width: 100,
         height: 180,
         x: -50,
         y: 0,
       },
-      idleHurtbox: {
+      defaultHurtbox: {
         isActive: true,
         width: 150,
         height: 220,
         x: -75,
         y: 0,
+      },
+      defaultBlockbox: {
+        isActive: false,
+        width: 260,
+        height: 100,
+        x: 0,
+        y: 100,
       },
     };
 
@@ -80,6 +87,7 @@ export default class Character implements IEntity {
       hasHit: false,
       hitStop: 0,
       hitStun: 0,
+      isInBlockbox: false,
       slideTime: 0,
       slideSpeed: 0,
       slideDirection: FacingDirection.Left,
@@ -89,27 +97,10 @@ export default class Character implements IEntity {
       isMoveable: true,
       velocityX: 0,
       velocityY: 0,
-      hitbox: {
-        isActive: false,
-        width: 10,
-        height: 10,
-        x: 0,
-        y: 0,
-      },
-      hurtbox: {
-        isActive: true,
-        width: 10,
-        height: 10,
-        x: 0,
-        y: 0,
-      },
-      pushbox: {
-        isActive: true,
-        width: 10,
-        height: 10,
-        x: 0,
-        y: 0,
-      },
+      hurtbox: {isActive: true, width: 10, height: 10, x: 0, y: 0},
+      pushbox: {isActive: true, width: 10, height: 10, x: 0, y: 0},
+      hitbox: {isActive: false, width: 10, height: 10, x: 0, y: 0},
+      blockbox: {isActive: false, width: 10, height: 10, x: 0, y: 0},
     };
   }
 }
