@@ -5,19 +5,22 @@ import Game from "../game.js";
 import ISystem from "./system.js";
 
 // not actually an "entity", this is just a hack
-interface IDebugEntity {
+interface IUIEntity {
   appearanceComp: IAppearanceComp;
   positionComp: IPositionComp;
-  element?: HTMLElement;
+  element: HTMLElement;
+  className: string;
 }
 
 export default class DebugRenderSystem implements ISystem {
   private gameElement: HTMLElement;
   private game: Game;
 
-  private infoBox: IDebugEntity;
-  private p1InfoBox: IDebugEntity;
-  private p2InfoBox: IDebugEntity;
+  private p1HealthMeter: IUIEntity;
+  private p2HealthMeter: IUIEntity;
+  private infoBox: IUIEntity;
+  private p1InfoBox: IUIEntity;
+  private p2InfoBox: IUIEntity;
 
   constructor(game: Game, elem: HTMLElement) {
     this.game = game;
@@ -25,6 +28,30 @@ export default class DebugRenderSystem implements ISystem {
       throw new Error();
     }
     this.gameElement = elem;
+
+    const healthMeterAppearanceComp = {
+      width: 0, // determine later
+      height: 30,
+      zIndex: 100,
+    };
+    this.p1HealthMeter = {
+      appearanceComp: Object.assign({}, healthMeterAppearanceComp),
+      positionComp: {
+        x: 0,
+        y: this.game.height - healthMeterAppearanceComp.height,
+      },
+      element: document.createElement("div"),
+      className: "ui-health ui-health-p1",
+    };
+    this.p2HealthMeter = {
+      appearanceComp: Object.assign({}, healthMeterAppearanceComp),
+      positionComp: {
+        x: this.game.width / 2,
+        y: this.game.height - healthMeterAppearanceComp.height,
+      },
+      element: document.createElement("div"),
+      className: "ui-health ui-health-p2",
+    };
 
     const infoBoxAppearanceComp = {
       width: 180,
@@ -35,8 +62,10 @@ export default class DebugRenderSystem implements ISystem {
       appearanceComp: infoBoxAppearanceComp,
       positionComp: {
         x: this.game.width / 2 - infoBoxAppearanceComp.width / 2,
-        y: this.game.height - infoBoxAppearanceComp.height,
+        y: this.game.height - infoBoxAppearanceComp.height - healthMeterAppearanceComp.height,
       },
+      element: document.createElement("div"),
+      className: "ui-debug",
     };
 
     const playerInfoAppearanceComp = {
@@ -48,20 +77,28 @@ export default class DebugRenderSystem implements ISystem {
       appearanceComp: Object.assign({}, playerInfoAppearanceComp),
       positionComp: {
         x: 0,
-        y: this.game.height - playerInfoAppearanceComp.height,
+        y: this.game.height - playerInfoAppearanceComp.height - healthMeterAppearanceComp.height,
       },
+      element: document.createElement("div"),
+      className: "ui-debug",
     };
     this.p2InfoBox = {
       appearanceComp: Object.assign({}, playerInfoAppearanceComp),
       positionComp: {
         x: this.game.width - playerInfoAppearanceComp.width,
-        y: this.game.height - playerInfoAppearanceComp.height,
+        y: this.game.height - playerInfoAppearanceComp.height - healthMeterAppearanceComp.height,
       },
+      element: document.createElement("div"),
+      className: "ui-debug",
     };
 
-    this.infoBox.element = this.createElement(this.infoBox);
-    this.p1InfoBox.element = this.createElement(this.p1InfoBox);
-    this.p2InfoBox.element = this.createElement(this.p2InfoBox);
+    [
+      this.p1HealthMeter,
+      this.p2HealthMeter,
+      this.infoBox,
+      this.p1InfoBox,
+      this.p2InfoBox,
+    ].forEach((e) => this.setupElement(e));
   }
 
   public update(entities: IEntity[], dt: number): void {
@@ -81,6 +118,18 @@ export default class DebugRenderSystem implements ISystem {
 
     this.p1InfoBox.element!.textContent = this.displayCharacterInfo(p1);
     this.p2InfoBox.element!.textContent = this.displayCharacterInfo(p2);
+
+    this.p1HealthMeter.element.style.width = `${this.calculateHealthMeterWidth(p1).toString()}px`;
+    this.p2HealthMeter.element.style.width = `${this.calculateHealthMeterWidth(p2).toString()}px`;
+    this.p1HealthMeter.element.style.transform = [
+      `translate3d(${(this.game.width / 2) - this.calculateHealthMeterWidth(p1)}px`,
+      `${-this.p1HealthMeter.positionComp.y}px,0px)`,
+    ].join(",");
+  }
+
+  private calculateHealthMeterWidth(c: Character): number {
+    const pct = c.characterStateComp.health / c.characterDefinitionComp.maxHealth;
+    return Math.floor(pct * (this.game.width / 2));
   }
 
   private displayCharacterInfo(c: Character): string {
@@ -92,12 +141,10 @@ export default class DebugRenderSystem implements ISystem {
     ].join("\n");
   }
 
-  private createElement(e: IDebugEntity): HTMLElement {
-    const elem = document.createElement("div");
-    elem.className = "entity debug-entity";
-    this.setStyles(elem, e.appearanceComp, e.positionComp);
-    this.gameElement.appendChild(elem);
-    return elem;
+  private setupElement(e: IUIEntity) {
+    e.element.className = `entity ${e.className}`;
+    this.setStyles(e.element, e.appearanceComp, e.positionComp);
+    this.gameElement.appendChild(e.element);
   }
 
   private setStyles(elem: HTMLElement, appearanceComp: IAppearanceComp, positionComp: IPositionComp): void {
@@ -105,7 +152,5 @@ export default class DebugRenderSystem implements ISystem {
     elem.style.width = `${appearanceComp.width}px`;
     elem.style.height = `${appearanceComp.height}px`;
     elem.style.zIndex = `${appearanceComp.zIndex}`;
-
-    elem.style.backgroundColor = "purple";
   }
 }

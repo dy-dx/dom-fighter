@@ -26,18 +26,24 @@ iframe {
   box-sizing: border-box;
   will-change: transform;
 }
-.debug-entity {
-  color: white;
-  font-family: monospace;
-  font-size: 13px;
-  line-height: 1.1;
-  overflow: hidden;
-  white-space: pre;
-}
 .hitbox {
   position: absolute;
   bottom: 0;
   left: 0;
   box-sizing: border-box;
   will-change: transform, width, height;
+}
+.ui-debug {
+  color: white;
+  font-family: monospace;
+  font-size: 13px;
+  line-height: 1.1;
+  overflow: hidden;
+  white-space: pre;
+  background-color: purple;
+}
+.ui-health {
+  border: 1px solid black;
+  background-color: yellow;
+  will-change: transform, width;
 }
