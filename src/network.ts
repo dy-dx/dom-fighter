@@ -65,7 +65,7 @@ export default class Network {
     this.connection!.send({ type, data });
   }
 
-  private onOpen(id: string): void {
+  private onOpen(): void {
     this.connection!.on("data", this.onMessage.bind(this));
     this.onReadyCallback();
   }
