@@ -13,7 +13,7 @@
         "strict": true
     },
     "files": [
-        "node_modules/peerjs/dist/peer.js"
+        "node_modules/peerjs/dist/peerjs.min.js"
     ],
     "include": [
         "src/**/*"

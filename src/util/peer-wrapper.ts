@@ -1,5 +1,7 @@
 // Web browsers need exact paths for imports, but typescript fails to load types for PeerJS this way
-import "../../node_modules/peerjs/dist/peer.js";
+// import "../../node_modules/peerjs/dist/peerjs.min.js";
+
+// ^ That used to work until peerjs switched to parcel. Now we're just loading the script in index.html.
 
 /**
  * This is a hack that imports peerjs types without actually importing the library.
