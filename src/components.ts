@@ -33,6 +33,7 @@ export interface IPhysicsComp {
   isMoveable: boolean;
   velocityX: number;
   velocityY: number;
+  accelerationY: number;
   pushbox: IHitbox;
   hurtbox: IHitbox;
   hitbox: IHitbox;
@@ -67,6 +68,8 @@ export enum FacingDirection {
 export enum CharacterState {
   Stand,
   Walk,
+  Jump,
+  JumpEnd,
   Attack,
   AttackEnd,
   Block,

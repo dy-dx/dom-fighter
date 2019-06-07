@@ -42,7 +42,7 @@ export default class RenderSystem implements ISystem {
   }
 
   private findOrCreateElement(e: IRenderable): HTMLElement {
-    const existingElement = document.getElementById(e.id.toString());
+    const existingElement = document.getElementById(`entity${e.id.toString()}`);
     if (existingElement) {
       return existingElement;
     }
@@ -55,7 +55,7 @@ export default class RenderSystem implements ISystem {
 
   private createParentElement(appearanceComp: IAppearanceComp, id: string): HTMLElement {
     const elem = document.createElement("div");
-    elem.id = id;
+    elem.id = `entity${id}`;
     elem.className = "entity";
     this.gameElement.appendChild(elem);
     return elem;

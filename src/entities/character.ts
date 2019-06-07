@@ -97,6 +97,7 @@ export default class Character implements IEntity {
       isMoveable: true,
       velocityX: 0,
       velocityY: 0,
+      accelerationY: 0,
       hurtbox: {isActive: true, width: 10, height: 10, x: 0, y: 0},
       pushbox: {isActive: true, width: 10, height: 10, x: 0, y: 0},
       hitbox: {isActive: false, width: 10, height: 10, x: 0, y: 0},

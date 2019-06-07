@@ -24,6 +24,7 @@ const createEntity = ({
       isMoveable: true,
       velocityX,
       velocityY,
+      accelerationY: 0,
       pushbox: {
         isActive: true,
         width: boxWidth,

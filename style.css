@@ -26,6 +26,12 @@ iframe {
   box-sizing: border-box;
   will-change: transform;
 }
+#entity0-position:after {
+  content: "p1";
+  color: white;
+  font-family: monospace;
+  bottom: 0;
+}
 .hitbox {
   position: absolute;
   bottom: 0;

@@ -24,6 +24,7 @@ export default class PhysicsSystem implements ISystem {
       const {velocityX, velocityY} = e.physicsComp;
       pos.x += velocityX * dt;
       pos.y += velocityY * dt;
+      e.physicsComp.velocityY += e.physicsComp.accelerationY;
      });
 
     pushboxEntities.forEach((e) => {
@@ -32,8 +33,8 @@ export default class PhysicsSystem implements ISystem {
       // Clamp to stage bounds
       const minX = -pushbox.x + 0; // +0 to avoid negative zero issue when using Object.is()
       const maxX = this.gameWidth - pushbox.x - pushbox.width;
-      pos.x = Math.max(pos.x, minX);
-      pos.x = Math.min(pos.x, maxX);
+      // pos.x = Math.max(pos.x, minX);
+      // pos.x = Math.min(pos.x, maxX);
 
       pushboxEntities.filter((o) => e !== o).forEach((o) => {
         if (!this.overlaps(e, o)) { return; }
@@ -71,6 +72,9 @@ export default class PhysicsSystem implements ISystem {
           }
         }
       });
+
+      pos.x = Math.max(pos.x, minX);
+      pos.x = Math.min(pos.x, maxX);
     });
   }
 
