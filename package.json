@@ -13,7 +13,7 @@
     "jest": "^24.8.0",
     "node-notifier": "^5.4.0",
     "node-turn": "0.0.4",
-    "peer": "^0.2.10",
+    "peer": "peers/peerjs-server#948a0b8f",
     "ts-jest": "^24.0.2",
     "tsc-watch": "dy-dx/tsc-watch#emit-error-lines",
     "tslint": "^5.16.0",

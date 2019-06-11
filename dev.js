@@ -16,9 +16,12 @@ const stunServer = new Turn({
 });
 stunServer.start();
 
-const peerServer = PeerServer({ port: 3002 });
-peerServer.on('connection', (id) => {
-  console.log('Local PeerServer: Connection from', id);
+const peerServer = PeerServer({ port: 3002, path: '/' });
+peerServer.on('connection', (client) => {
+  console.log('Local PeerServer: Connection from', client.id);
+});
+peerServer.on('disconnect', (client) => {
+  console.log('Local PeerServer: Disconnected:', client.id);
 });
 
 const bs = browserSync.create();
