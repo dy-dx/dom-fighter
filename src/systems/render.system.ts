@@ -42,20 +42,21 @@ export default class RenderSystem implements ISystem {
   }
 
   private findOrCreateElement(e: IRenderable): HTMLElement {
-    const existingElement = document.getElementById(e.id.toString());
+    const elementId = `entity${e.id.toString()}`;
+    const existingElement = document.getElementById(elementId);
     if (existingElement) {
       return existingElement;
     }
-    const newElement = this.createParentElement(e.appearanceComp, e.id.toString());
+    const newElement = this.createParentElement(e.appearanceComp, elementId);
     if (e.physicsComp) {
       this.createDebugBoxes(newElement, e.physicsComp);
     }
     return newElement;
   }
 
-  private createParentElement(appearanceComp: IAppearanceComp, id: string): HTMLElement {
+  private createParentElement(appearanceComp: IAppearanceComp, elementId: string): HTMLElement {
     const elem = document.createElement("div");
-    elem.id = id;
+    elem.id = elementId;
     elem.className = "entity";
     this.gameElement.appendChild(elem);
     return elem;

@@ -17,6 +17,7 @@ iframe {
   margin: 0 auto;
   position: relative;
   overflow: hidden;
+  font-family: monospace;
 }
 .entity {
   position: absolute;
@@ -25,6 +26,15 @@ iframe {
   background-color: black;
   box-sizing: border-box;
   will-change: transform;
+}
+#entity0-position:after, #entity1-position:after {
+  content: "p1";
+  color: white;
+  position: absolute;
+  transform: translate3d(-50%, -120%, 0px);
+}
+#entity1-position:after {
+  content: "p2";
 }
 .hitbox {
   position: absolute;
