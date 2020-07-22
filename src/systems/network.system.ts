@@ -1,8 +1,4 @@
-import {
-  CharacterSide,
-  ICharacterInputComp,
-  ICharacterStateComp,
-} from "../components.js";
+import {CharacterSide, ICharacterInputComp, ICharacterStateComp} from "../components.js";
 import {IEntity} from "../entities/entity.js";
 import Game from "../game.js";
 import Network, {MessageType} from "../network.js";
@@ -179,7 +175,7 @@ export default class NetworkSystem implements ISystem {
     console.log("Chat received:", s);
   }
 
-  private onInput(data: {inputComp: ICharacterInputComp, tick: number}): void {
+  private onInput(data: {inputComp: ICharacterInputComp; tick: number}): void {
     this.remoteInputs.push(data);
   }
 
@@ -196,7 +192,7 @@ export default class NetworkSystem implements ISystem {
   }
 
   private sendInput(inputComp: ICharacterInputComp, tick: number): void {
-    this.network.send(MessageType.Input, { inputComp, tick });
+    this.network.send(MessageType.Input, {inputComp, tick});
   }
 
   private sendPing(): void {

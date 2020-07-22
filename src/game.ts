@@ -37,6 +37,7 @@ export default class Game {
 
     this.networkSystem = new NetworkSystem(this);
     this.inputSystems = [
+      // prettier-ignore
       new InputSystem(document),
       this.networkSystem,
       new DebugSystem(this, document),
@@ -47,6 +48,7 @@ export default class Game {
       new CombatSystem(),
     ];
     this.renderSystems = [
+      // prettier-ignore
       new RenderSystem(elem),
       new DebugRenderSystem(this, elem),
     ];
@@ -86,7 +88,7 @@ export default class Game {
     this.entities.push(p2);
     this.entities.push(new Stage(this.width, this.height));
     // fixme, terrible hack
-    this.entities.forEach((e, i) => e.id = i);
+    this.entities.forEach((e, i) => (e.id = i));
   }
 
   public togglePause(): void {

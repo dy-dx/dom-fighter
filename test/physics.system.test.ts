@@ -66,58 +66,50 @@ describe("when two pushboxes overlap", () => {
   };
 
   it("pushes one to the left and one to the right", () => {
-    expect(getUpdatedPositions({x1: 200, x2: 250, w1: 100, w2: 100}))
-      .toEqual({x1: 175, x2: 275});
+    expect(getUpdatedPositions({x1: 200, x2: 250, w1: 100, w2: 100})).toEqual({x1: 175, x2: 275});
   });
 
   describe("by 1 pixel", () => {
     it("pushes one to the left and one to the right", () => {
-      expect(getUpdatedPositions({x1: 200, x2: 299, w1: 100, w2: 100}))
-        .toEqual({x1: 200, x2: 300});
+      expect(getUpdatedPositions({x1: 200, x2: 299, w1: 100, w2: 100})).toEqual({x1: 200, x2: 300});
     });
   });
 
   describe("and one lies entirely within the other", () => {
     it("pushes one to the left and one to the right", () => {
-      expect(getUpdatedPositions({x1: 200, x2: 225, w1: 100, w2: 50}))
-        // this is not necessarily the intended outcome, but it's good enough for now
-        .toEqual({x1: 238, x2: 188});
+      // this is not necessarily the intended outcome, but it's good enough for now
+      expect(getUpdatedPositions({x1: 200, x2: 225, w1: 100, w2: 50})).toEqual({x1: 238, x2: 188});
     });
   });
 
   describe("and they share a left edge", () => {
     it("pushes one to the left and one to the right", () => {
-      expect(getUpdatedPositions({x1: 200, x2: 200, w1: 100, w2: 50}))
-        // this is not necessarily the intended outcome, but it's good enough for now
-        .toEqual({x1: 225, x2: 175});
+      // this is not necessarily the intended outcome, but it's good enough for now
+      expect(getUpdatedPositions({x1: 200, x2: 200, w1: 100, w2: 50})).toEqual({x1: 225, x2: 175});
     });
   });
 
   describe("and they share a right edge", () => {
     it("pushes one to the left and one to the right", () => {
-      expect(getUpdatedPositions({x1: 200, x2: 250, w1: 100, w2: 50}))
-        .toEqual({x1: 175, x2: 275});
+      expect(getUpdatedPositions({x1: 200, x2: 250, w1: 100, w2: 50})).toEqual({x1: 175, x2: 275});
     });
   });
 
   describe("and they occupy the same exact space", () => {
     it("pushes one out of the way", () => {
-      expect(getUpdatedPositions({x1: 200, x2: 200, w1: 100, w2: 100}))
-        .toEqual({x1: 150, x2: 250});
+      expect(getUpdatedPositions({x1: 200, x2: 200, w1: 100, w2: 100})).toEqual({x1: 150, x2: 250});
     });
   });
 
   describe("and one is already clamped to the left edge of the stage", () => {
     it("pushes the non-clamped pushbox to the right", () => {
-      expect(getUpdatedPositions({x1: 0, x2: 50, w1: 100, w2: 100}))
-        .toEqual({x1: 0, x2: 100});
+      expect(getUpdatedPositions({x1: 0, x2: 50, w1: 100, w2: 100})).toEqual({x1: 0, x2: 100});
     });
   });
 
   describe("and one is already clamped to the right edge of the stage", () => {
     it("pushes the non-clamped pushbox to the right", () => {
-      expect(getUpdatedPositions({x1: 900, x2: 850, w1: 100, w2: 100}))
-        .toEqual({x1: 900, x2: 800});
+      expect(getUpdatedPositions({x1: 900, x2: 850, w1: 100, w2: 100})).toEqual({x1: 900, x2: 800});
     });
   });
 });

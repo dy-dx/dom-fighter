@@ -45,22 +45,30 @@ export default class InputSystem implements ISystem {
   }
 
   private pressKey(evt: KeyboardEvent): void {
-    if (evt.ctrlKey || evt.metaKey) { return; }
+    if (evt.ctrlKey || evt.metaKey) {
+      return;
+    }
     const action = MAPPING[evt.code] as CharacterInputAction;
-    if (!action) { return; }
+    if (!action) {
+      return;
+    }
     evt.preventDefault();
-    if ((this.pressed)[action] !== undefined) {
-      (this.pressed)[action] = true;
+    if (this.pressed[action] !== undefined) {
+      this.pressed[action] = true;
     }
   }
 
   private releaseKey(evt: KeyboardEvent): void {
-    if (evt.ctrlKey || evt.metaKey) { return; }
+    if (evt.ctrlKey || evt.metaKey) {
+      return;
+    }
     const action = MAPPING[evt.code] as CharacterInputAction;
-    if (!action) { return; }
+    if (!action) {
+      return;
+    }
     evt.preventDefault();
-    if ((this.pressed)[action] !== undefined) {
-      (this.pressed)[action] = false;
+    if (this.pressed[action] !== undefined) {
+      this.pressed[action] = false;
     }
   }
 }

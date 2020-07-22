@@ -14,15 +14,15 @@ export type DebugInputAction = "pause" | "reset" | "nextFrame" | "saveState" | "
 export type InputAction = CharacterInputAction | DebugInputAction;
 
 export type ICharacterInputComp = {
-  [K in CharacterInputAction]: boolean
+  [K in CharacterInputAction]: boolean;
 };
 
 export type IDebugInputComp = {
-  [K in DebugInputAction]: boolean
+  [K in DebugInputAction]: boolean;
 };
 
 export type IInputComp = {
-  [K in InputAction]: boolean
+  [K in InputAction]: boolean;
 };
 
 export interface IHitbox {

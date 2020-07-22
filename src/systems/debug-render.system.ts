@@ -93,6 +93,7 @@ export default class DebugRenderSystem implements ISystem {
     };
 
     [
+      // prettier-ignore
       this.p1HealthMeter,
       this.p2HealthMeter,
       this.infoBox,
@@ -106,9 +107,9 @@ export default class DebugRenderSystem implements ISystem {
     const p2 = this.game.getP2();
     const networkInfo = this.game.networkSystem.debugInfo();
 
-    const networkText = !networkInfo.isConnectionReady ? "Waiting for connection" : [
-      `delay: ${networkInfo.tickDelay} | ping: ${Math.ceil(networkInfo.roundtripLatency / 2)}ms`,
-    ].join("\n");
+    const networkText = !networkInfo.isConnectionReady
+      ? "Waiting for connection"
+      : `delay: ${networkInfo.tickDelay} | ping: ${Math.ceil(networkInfo.roundtripLatency / 2)}ms`;
 
     this.infoBox.element.textContent = [
       networkText,
@@ -122,7 +123,7 @@ export default class DebugRenderSystem implements ISystem {
     this.p1HealthMeter.element.style.width = `${this.calculateHealthMeterWidth(p1).toString()}px`;
     this.p2HealthMeter.element.style.width = `${this.calculateHealthMeterWidth(p2).toString()}px`;
     this.p1HealthMeter.element.style.transform = [
-      `translate3d(${(this.game.width / 2) - this.calculateHealthMeterWidth(p1)}px`,
+      `translate3d(${this.game.width / 2 - this.calculateHealthMeterWidth(p1)}px`,
       `${-this.p1HealthMeter.positionComp.y}px,0px)`,
     ].join(",");
   }
@@ -135,7 +136,9 @@ export default class DebugRenderSystem implements ISystem {
   private displayCharacterInfo(c: Character): string {
     const stateComp = c.characterStateComp;
     return [
-      `${stateComp.health}hp | ${c.positionComp.x},${c.positionComp.y} | ${FacingDirection[stateComp.facingDirection]}`,
+      `${stateComp.health}hp | ${c.positionComp.x},${c.positionComp.y} | ${
+        FacingDirection[stateComp.facingDirection]
+      }`,
       `hitstop: ${c.combatComp.hitStop} | hitstun: ${c.combatComp.hitStun}`,
       `${CharacterState[stateComp.state]} [${stateComp.frameIndex}]`,
     ].join("\n");

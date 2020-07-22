@@ -49,7 +49,7 @@ export default class Network {
       Object.assign(peerOpts, {
         host: "localhost",
         port: localPort,
-        config: { iceServers: [{url: "stun:localhost:3478"}] },
+        config: {iceServers: [{url: "stun:localhost:3478"}]},
       });
     }
 
@@ -69,7 +69,7 @@ export default class Network {
   }
 
   public send(type: MessageType, data: any): void {
-    this.connection!.send({ type, data });
+    this.connection!.send({type, data});
   }
 
   private onOpen(): void {
@@ -82,7 +82,7 @@ export default class Network {
       console.warn("Malformed network message", msg);
       return;
     }
-    const {type, data}: {type: MessageType, data: any} = msg;
+    const {type, data}: {type: MessageType; data: any} = msg;
 
     this.onMessageCallback(type, data);
   }

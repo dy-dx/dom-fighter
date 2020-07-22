@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 
 export default function deepClone<T extends unknown>(o: T): T {
-  if (typeof o !== "object") { return o; }
-  if (!o) { return o; }
+  if (!o || typeof o !== "object") {
+    return o;
+  }
 
   if (Array.isArray(o)) {
     // assume arrays are not sparse

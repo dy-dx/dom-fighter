@@ -5,24 +5,24 @@ module.exports = {
       "files": ["**/*.ts", "**/*.tsx"],
       "parser": "@typescript-eslint/parser",
       "plugins": [
-        "@typescript-eslint"
+        "@typescript-eslint",
       ],
       "extends": [
         "eslint:recommended",
         "plugin:@typescript-eslint/recommended",
-        "plugin:@typescript-eslint/recommended-requiring-type-checking"
+        "plugin:@typescript-eslint/recommended-requiring-type-checking",
+        "prettier/@typescript-eslint",
       ],
       "env": {
         "browser": true,
-        "es6": true
+        "es6": true,
       },
       "parserOptions": {
         "project": ["tsconfig.json", "tsconfig.eslint.json"],
-        "sourceType": "module"
+        "sourceType": "module",
       },
       "rules": {
         "no-console": ["error", { allow: ["warn", "error"] }],
-        "@typescript-eslint/indent": ["error", 2],
         "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
         "@typescript-eslint/no-non-null-assertion": "off",
         "@typescript-eslint/no-inferrable-types": "off",
@@ -35,8 +35,12 @@ module.exports = {
       "extends": "eslint:recommended",
       "env": {
         "node": true,
-        "es6": true
+        "es6": true,
       },
-    }
+      "rules": {
+        "comma-dangle": ["error", "always-multiline"],
+        "indent": ["error", 2],
+      },
+    },
   ],
 };

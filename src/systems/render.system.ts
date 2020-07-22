@@ -27,14 +27,16 @@ export default class RenderSystem implements ISystem {
 
         if (e.physicsComp) {
           [
-            { hitbox: e.physicsComp.pushbox, type: "pushbox" },
-            { hitbox: e.physicsComp.hurtbox, type: "hurtbox" },
-            { hitbox: e.physicsComp.hitbox, type: "hitbox" },
-            { hitbox: e.physicsComp.blockbox, type: "blockbox" },
+            {hitbox: e.physicsComp.pushbox, type: "pushbox"},
+            {hitbox: e.physicsComp.hurtbox, type: "hurtbox"},
+            {hitbox: e.physicsComp.hitbox, type: "hitbox"},
+            {hitbox: e.physicsComp.blockbox, type: "blockbox"},
           ].forEach(({hitbox, type}) => {
             const elementId = `${elem.id}-${type}`;
             const hitboxElem = document.getElementById(elementId);
-            if (!hitboxElem) { throw new Error(`No element with id: ${elementId}`); }
+            if (!hitboxElem) {
+              throw new Error(`No element with id: ${elementId}`);
+            }
             this.setHitboxDimensions(hitboxElem, hitbox);
           });
         }

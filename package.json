@@ -5,6 +5,7 @@
   "scripts": {
     "clean": "git clean -fdX dist",
     "dev": "npm run clean && tsc -w & browser-sync start --server --files '*.css' '**/*.html' 'dist/**/*'",
+    "lint": "eslint . && prettier --check .",
     "test": "jest"
   },
   "devDependencies": {
@@ -13,11 +14,13 @@
     "@typescript-eslint/parser": "^3.7.0",
     "browser-sync": "^2.26.10",
     "eslint": "^7.5.0",
+    "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-jsdoc": "^30.0.3 ",
     "jest": "^26.1.0",
     "node-notifier": "^7.0.2",
     "node-turn": "0.0.4",
     "peer": "^0.2.10",
+    "prettier": "2.0.5",
     "ts-jest": "^26.1.3",
     "tsc-watch": "dy-dx/tsc-watch#emit-error-lines",
     "typescript": "^3.9.7"

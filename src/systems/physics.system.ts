@@ -35,51 +35,50 @@ export default class PhysicsSystem implements ISystem {
       pos.x = Math.max(pos.x, minX);
       pos.x = Math.min(pos.x, maxX);
 
-      pushboxEntities.filter((o) => e !== o).forEach((o) => {
-        if (!this.overlaps(e, o)) { return; }
+      pushboxEntities
+        .filter((o) => e !== o)
+        .forEach((o) => {
+          if (!this.overlaps(e, o)) {
+            return;
+          }
 
-        const left = e.positionComp.x + e.physicsComp.pushbox.x;
-        const right = left + e.physicsComp.pushbox.width;
-        const oLeft = o.positionComp.x + o.physicsComp.pushbox.x;
-        const oRight = oLeft + o.physicsComp.pushbox.width;
+          const left = e.positionComp.x + e.physicsComp.pushbox.x;
+          const right = left + e.physicsComp.pushbox.width;
+          const oLeft = o.positionComp.x + o.physicsComp.pushbox.x;
+          const oRight = oLeft + o.physicsComp.pushbox.width;
 
-        if (right <= oRight) {
-          const distance = right - oLeft;
-          if (pos.x <= minX) {
-            // we're already clamped to the stage edge, so move opponent only
-            o.positionComp.x += distance;
-          } else {
-            e.positionComp.x -= Math.floor(distance / 2);
-            o.positionComp.x += Math.ceil(distance / 2);
+          if (right <= oRight) {
+            const distance = right - oLeft;
+            if (pos.x <= minX) {
+              // we're already clamped to the stage edge, so move opponent only
+              o.positionComp.x += distance;
+            } else {
+              e.positionComp.x -= Math.floor(distance / 2);
+              o.positionComp.x += Math.ceil(distance / 2);
+            }
+          } else if (left >= oLeft) {
+            const distance = oRight - left;
+            if (pos.x >= maxX) {
+              // we're already clamped to the stage edge, so move opponent only
+              o.positionComp.x -= distance;
+            } else {
+              e.positionComp.x += Math.floor(distance / 2);
+              o.positionComp.x -= Math.ceil(distance / 2);
+            }
+          } else if (left === oLeft && right === oRight) {
+            // pushboxes occupy the same space, just move toward middle of stage
+            // this is not a real solution but it's good enough for now
+            if (e.positionComp.x >= this.gameWidth / 2) {
+              e.positionComp.x -= e.physicsComp.pushbox.width;
+            } else {
+              e.positionComp.x += e.physicsComp.pushbox.width;
+            }
           }
-        } else if (left >= oLeft) {
-          const distance = oRight - left;
-          if (pos.x >= maxX) {
-            // we're already clamped to the stage edge, so move opponent only
-            o.positionComp.x -= distance;
-          } else {
-            e.positionComp.x += Math.floor(distance / 2);
-            o.positionComp.x -= Math.ceil(distance / 2);
-          }
-        } else if (left === oLeft && right === oRight) {
-          // pushboxes occupy the same space, just move toward middle of stage
-          // this is not a real solution but it's good enough for now
-          if (e.positionComp.x >= this.gameWidth / 2) {
-            e.positionComp.x -= e.physicsComp.pushbox.width;
-          } else {
-            e.positionComp.x += e.physicsComp.pushbox.width;
-          }
-        }
-      });
+        });
     });
   }
 
   private overlaps(a: IPhysicsEntity, b: IPhysicsEntity): boolean {
-    return hitboxOverlaps(
-      a.positionComp,
-      a.physicsComp.pushbox,
-      b.positionComp,
-      b.physicsComp.pushbox,
-    );
+    return hitboxOverlaps(a.positionComp, a.physicsComp.pushbox, b.positionComp, b.physicsComp.pushbox);
   }
 }

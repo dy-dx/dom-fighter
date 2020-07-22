@@ -28,7 +28,9 @@ export default class DebugSystem implements ISystem {
   }
 
   public update(_entities: IEntity[], _dt: number): void {
-    if (!this.game.areDebugControlsAllowed()) { return; }
+    if (!this.game.areDebugControlsAllowed()) {
+      return;
+    }
 
     const released = this.released;
 
@@ -50,15 +52,19 @@ export default class DebugSystem implements ISystem {
 
     // reset inputs because we only listen on keyup
     for (const k in released) {
-      released[(k as DebugInputAction)] = false;
+      released[k as DebugInputAction] = false;
     }
   }
 
   private releaseKey(evt: KeyboardEvent): void {
-    if (evt.ctrlKey || evt.metaKey) { return; }
+    if (evt.ctrlKey || evt.metaKey) {
+      return;
+    }
     const action = MAPPING[evt.code];
-    if (!action) { return; }
+    if (!action) {
+      return;
+    }
     evt.preventDefault();
-    this.released[(action as DebugInputAction)] = true;
+    this.released[action as DebugInputAction] = true;
   }
 }

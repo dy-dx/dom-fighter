@@ -27,7 +27,8 @@ iframe {
   box-sizing: border-box;
   will-change: transform;
 }
-#entity0-position:after, #entity1-position:after {
+#entity0-position:after,
+#entity1-position:after {
   content: "p1";
   color: white;
   position: absolute;

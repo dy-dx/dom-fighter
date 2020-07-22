@@ -83,9 +83,8 @@ export default class CharacterStateSystem implements ISystem {
             if (combatComp.slideTime > 0) {
               combatComp.slideTime--;
 
-              physicsComp.velocityX = combatComp.slideSpeed * (
-                combatComp.slideDirection === FacingDirection.Right ? 1 : -1
-              );
+              physicsComp.velocityX =
+                combatComp.slideSpeed * (combatComp.slideDirection === FacingDirection.Right ? 1 : -1);
             } else {
               physicsComp.velocityX = 0;
             }
@@ -172,7 +171,12 @@ export default class CharacterStateSystem implements ISystem {
       });
   }
 
-  private walk(stateComp: ICharacterStateComp, physicsComp: IPhysicsComp, walkSpeed: number, direction: Direction) {
+  private walk(
+    stateComp: ICharacterStateComp,
+    physicsComp: IPhysicsComp,
+    walkSpeed: number,
+    direction: Direction,
+  ) {
     if (this.setState(stateComp, CharacterState.Walk)) {
       if (direction === Direction.Left) {
         physicsComp.velocityX = -walkSpeed;
@@ -265,5 +269,4 @@ export default class CharacterStateSystem implements ISystem {
     }
     return false;
   }
-
 }
