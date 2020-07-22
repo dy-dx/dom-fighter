@@ -24,7 +24,7 @@ export default class PhysicsSystem implements ISystem {
       const {velocityX, velocityY} = e.physicsComp;
       pos.x += velocityX * dt;
       pos.y += velocityY * dt;
-     });
+    });
 
     pushboxEntities.forEach((e) => {
       const pos: IPositionComp = e.positionComp;

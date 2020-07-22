@@ -17,7 +17,7 @@ const renderLoop = () => {
   window.requestAnimationFrame(renderLoop);
 };
 
-const launch = () => {
+const launch = (): void => {
   renderLoop();
   setInterval(updateLoop, 1000 / 60);
 };

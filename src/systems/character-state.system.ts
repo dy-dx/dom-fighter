@@ -23,7 +23,7 @@ interface ICharacterEntity extends IEntity {
   positionComp: IPositionComp;
 }
 
-enum Direction {
+const enum Direction {
   Up,
   Down,
   Left,
@@ -36,7 +36,7 @@ export default class CharacterStateSystem implements ISystem {
     this.game = game;
   }
 
-  public update(entities: IEntity[], dt: number): void {
+  public update(entities: IEntity[], _dt: number): void {
     entities
       .filter((e): e is ICharacterEntity => !!e.characterStateComp)
       .forEach((e: ICharacterEntity) => {
@@ -57,7 +57,7 @@ export default class CharacterStateSystem implements ISystem {
           return;
         }
 
-        if (positionComp.x > opponentCharacter!.positionComp.x) {
+        if (positionComp.x > opponentCharacter.positionComp.x) {
           stateComp.facingDirection = FacingDirection.Left;
         } else {
           stateComp.facingDirection = FacingDirection.Right;
@@ -201,7 +201,7 @@ export default class CharacterStateSystem implements ISystem {
     }
   }
 
-  private endBlock(stateComp: ICharacterStateComp, physicsComp: IPhysicsComp) {
+  private endBlock(stateComp: ICharacterStateComp, _physicsComp: IPhysicsComp) {
     if (this.setState(stateComp, CharacterState.BlockEnd)) {
       this.setState(stateComp, CharacterState.Stand);
     }

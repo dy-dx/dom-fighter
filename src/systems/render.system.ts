@@ -18,7 +18,7 @@ export default class RenderSystem implements ISystem {
     this.gameElement = elem;
   }
 
-  public update(entities: IEntity[], dt: number): void {
+  public update(entities: IEntity[], _dt: number): void {
     entities
       .filter((e): e is IRenderable => !!e.appearanceComp)
       .forEach((e) => {

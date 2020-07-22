@@ -8,8 +8,7 @@ import Game from "../game.js";
 import Network, {MessageType} from "../network.js";
 import ISystem from "./system.js";
 
-// fixme
-// tslint:disable:no-console
+/* eslint-disable no-console */
 
 interface ICharacterEntity extends IEntity {
   characterStateComp: ICharacterStateComp;
@@ -81,7 +80,7 @@ export default class NetworkSystem implements ISystem {
     };
   }
 
-  public update(entities: IEntity[], dt: number): void {
+  public update(entities: IEntity[], _dt: number): void {
     if (!this.isConnectionReady) {
       return;
     }

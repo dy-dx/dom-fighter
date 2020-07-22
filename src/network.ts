@@ -1,6 +1,13 @@
 import Peer from "./util/peer-wrapper.js";
 
-export enum MessageType {
+// fixme
+/* eslint-disable
+  @typescript-eslint/no-unsafe-assignment,
+  @typescript-eslint/no-unsafe-member-access,
+  @typescript-eslint/explicit-module-boundary-types
+*/
+
+export const enum MessageType {
   Input,
   InputAck,
   Ping,
@@ -72,7 +79,7 @@ export default class Network {
 
   private onMessage(msg: any): void {
     if (msg.type == null) {
-      console.warn("Malformed network message", msg); // tslint:disable-line:no-console
+      console.warn("Malformed network message", msg);
       return;
     }
     const {type, data}: {type: MessageType, data: any} = msg;

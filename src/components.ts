@@ -17,6 +17,10 @@ export type ICharacterInputComp = {
   [K in CharacterInputAction]: boolean
 };
 
+export type IDebugInputComp = {
+  [K in DebugInputAction]: boolean
+};
+
 export type IInputComp = {
   [K in InputAction]: boolean
 };
@@ -77,7 +81,7 @@ export enum CharacterState {
   HitstunEnd,
 }
 
-export enum CharacterSide {
+export const enum CharacterSide {
   P1,
   P2,
 }

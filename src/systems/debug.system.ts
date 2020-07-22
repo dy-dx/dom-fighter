@@ -1,4 +1,4 @@
-import {IInputComp, InputAction} from "../components.js";
+import {IDebugInputComp, DebugInputAction} from "../components.js";
 import {IEntity} from "../entities/entity.js";
 import Game from "../game.js";
 import deepClone from "../util/deep-clone.js";
@@ -10,19 +10,13 @@ import ISystem from "./system.js";
 
 export default class DebugSystem implements ISystem {
   private game: Game;
-  private released: IInputComp;
+  private released: IDebugInputComp;
   private savedEntityState?: IEntity[];
 
   constructor(game: Game, document: Document) {
     this.game = game;
 
     this.released = {
-      left: false,
-      up: false,
-      right: false,
-      down: false,
-      attack: false,
-
       pause: false,
       reset: false,
       nextFrame: false,
@@ -33,7 +27,7 @@ export default class DebugSystem implements ISystem {
     document.addEventListener("keyup", this.releaseKey.bind(this));
   }
 
-  public update(entities: IEntity[], dt: number): void {
+  public update(_entities: IEntity[], _dt: number): void {
     if (!this.game.areDebugControlsAllowed()) { return; }
 
     const released = this.released;
@@ -56,9 +50,7 @@ export default class DebugSystem implements ISystem {
 
     // reset inputs because we only listen on keyup
     for (const k in released) {
-      if (released.hasOwnProperty(k)) {
-        released[(k as InputAction)] = false;
-      }
+      released[(k as DebugInputAction)] = false;
     }
   }
 
@@ -67,6 +59,6 @@ export default class DebugSystem implements ISystem {
     const action = MAPPING[evt.code];
     if (!action) { return; }
     evt.preventDefault();
-    this.released[action] = true;
+    this.released[(action as DebugInputAction)] = true;
   }
 }

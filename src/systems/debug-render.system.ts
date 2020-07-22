@@ -101,7 +101,7 @@ export default class DebugRenderSystem implements ISystem {
     ].forEach((e) => this.setupElement(e));
   }
 
-  public update(entities: IEntity[], dt: number): void {
+  public update(_entities: IEntity[], _dt: number): void {
     const p1 = this.game.getP1();
     const p2 = this.game.getP2();
     const networkInfo = this.game.networkSystem.debugInfo();
@@ -110,14 +110,14 @@ export default class DebugRenderSystem implements ISystem {
       `delay: ${networkInfo.tickDelay} | ping: ${Math.ceil(networkInfo.roundtripLatency / 2)}ms`,
     ].join("\n");
 
-    this.infoBox.element!.textContent = [
+    this.infoBox.element.textContent = [
       networkText,
       `update: ${this.game.approximateAvgUpdateMs.toFixed(1)}ms`,
       `render: ${this.game.approximateAvgRenderMs.toFixed(1)}ms`,
     ].join("\n");
 
-    this.p1InfoBox.element!.textContent = this.displayCharacterInfo(p1);
-    this.p2InfoBox.element!.textContent = this.displayCharacterInfo(p2);
+    this.p1InfoBox.element.textContent = this.displayCharacterInfo(p1);
+    this.p2InfoBox.element.textContent = this.displayCharacterInfo(p2);
 
     this.p1HealthMeter.element.style.width = `${this.calculateHealthMeterWidth(p1).toString()}px`;
     this.p2HealthMeter.element.style.width = `${this.calculateHealthMeterWidth(p2).toString()}px`;

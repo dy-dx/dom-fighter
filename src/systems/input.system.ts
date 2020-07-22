@@ -1,4 +1,4 @@
-import {ICharacterInputComp, InputAction} from "../components.js";
+import {ICharacterInputComp, InputAction, CharacterInputAction} from "../components.js";
 import {IEntity} from "../entities/entity.js";
 import ISystem from "./system.js";
 
@@ -36,7 +36,7 @@ export default class InputSystem implements ISystem {
     document.addEventListener("keyup", this.releaseKey.bind(this));
   }
 
-  public update(entities: IEntity[], dt: number): void {
+  public update(entities: IEntity[], _dt: number): void {
     entities
       .filter((e) => e.isControlledByClient)
       .forEach((e) => {
@@ -46,21 +46,21 @@ export default class InputSystem implements ISystem {
 
   private pressKey(evt: KeyboardEvent): void {
     if (evt.ctrlKey || evt.metaKey) { return; }
-    const action = MAPPING[evt.code];
+    const action = MAPPING[evt.code] as CharacterInputAction;
     if (!action) { return; }
     evt.preventDefault();
-    if ((this.pressed as any)[action] !== undefined) {
-      (this.pressed as any)[action] = true;
+    if ((this.pressed)[action] !== undefined) {
+      (this.pressed)[action] = true;
     }
   }
 
   private releaseKey(evt: KeyboardEvent): void {
     if (evt.ctrlKey || evt.metaKey) { return; }
-    const action = MAPPING[evt.code];
+    const action = MAPPING[evt.code] as CharacterInputAction;
     if (!action) { return; }
     evt.preventDefault();
-    if ((this.pressed as any)[action] !== undefined) {
-      (this.pressed as any)[action] = false;
+    if ((this.pressed)[action] !== undefined) {
+      (this.pressed)[action] = false;
     }
   }
 }

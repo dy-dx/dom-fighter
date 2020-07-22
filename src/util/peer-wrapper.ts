@@ -15,6 +15,7 @@
  * declare type Peer = import ("peerjs");
  * declare type DataConnection = import ("peerjs").DataConnection;
  */
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import Peer = require("peerjs");
 

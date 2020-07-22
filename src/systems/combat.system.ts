@@ -19,7 +19,7 @@ interface ICombatEntity extends IEntity {
 }
 
 export default class CombatSystem implements ISystem {
-  public update(entities: IEntity[], dt: number): void {
+  public update(entities: IEntity[], _dt: number): void {
     const physicsEntities = entities.filter((e): e is ICombatEntity => !!e.combatComp);
 
     physicsEntities.forEach((e) => {
