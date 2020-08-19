@@ -12,6 +12,7 @@ const createEntity = ({
   y = 0,
   velocityX = 0,
   velocityY = 0,
+  accelerationY = 0,
   boxOffsetX = 0,
   boxOffsetY = 0,
   boxWidth = 100,
@@ -24,6 +25,7 @@ const createEntity = ({
       isMoveable: true,
       velocityX,
       velocityY,
+      accelerationY,
       pushbox: {
         isActive: true,
         width: boxWidth,
@@ -108,8 +110,40 @@ describe("when two pushboxes overlap", () => {
   });
 
   describe("and one is already clamped to the right edge of the stage", () => {
-    it("pushes the non-clamped pushbox to the right", () => {
+    it("pushes the non-clamped pushbox to the left", () => {
       expect(getUpdatedPositions({x1: 900, x2: 850, w1: 100, w2: 100})).toEqual({x1: 900, x2: 800});
+    });
+  });
+});
+
+describe("jumping over an opponent", () => {
+  describe("in the right corner", () => {
+    it("pushes the grounded player toward the center", () => {
+      const system = new PhysicsSystem(1000);
+      const e1 = createEntity({x: 900, boxWidth: 100, y: 150, accelerationY: -1, velocityX: 1});
+      const e2 = createEntity({x: 900, boxWidth: 100, y: 0, accelerationY: 0});
+      for (let i = 0; i < 20; i++) {
+        system.update([e1, e2], 1);
+      }
+
+      expect(e1.positionComp.y).toEqual(0);
+      expect(e1.positionComp.x).toEqual(900);
+      expect(e2.positionComp.x).toEqual(800);
+    });
+  });
+
+  describe("in the left corner", () => {
+    it("pushes the grounded player toward the center", () => {
+      const system = new PhysicsSystem(1000);
+      const e1 = createEntity({x: 0, boxWidth: 100, y: 150, accelerationY: -1, velocityX: -1});
+      const e2 = createEntity({x: 0, boxWidth: 100, y: 0, accelerationY: 0});
+      for (let i = 0; i < 20; i++) {
+        system.update([e1, e2], 1);
+      }
+
+      expect(e1.positionComp.y).toEqual(0);
+      expect(e1.positionComp.x).toEqual(0);
+      expect(e2.positionComp.x).toEqual(100);
     });
   });
 });

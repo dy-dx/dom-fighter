@@ -148,6 +148,20 @@ export default class CharacterStateSystem implements ISystem {
           this.endBlock(stateComp, physicsComp);
         }
 
+        if (stateComp.state === CharacterState.Jump && positionComp.y <= 0) {
+          this.endJump(stateComp, physicsComp, positionComp);
+        }
+
+        if (pressed.up) {
+          if (pressed.left) {
+            this.jump(Direction.Left, stateComp, physicsComp);
+          } else if (pressed.right) {
+            this.jump(Direction.Right, stateComp, physicsComp);
+          } else {
+            this.jump(Direction.Up, stateComp, physicsComp);
+          }
+        }
+
         if (combatComp.isInBlockbox) {
           if ((pressed.left && !isFacingLeft) || (pressed.right && isFacingLeft)) {
             this.enterBlock(stateComp, physicsComp);
@@ -184,6 +198,30 @@ export default class CharacterStateSystem implements ISystem {
         physicsComp.velocityX = walkSpeed;
       }
     }
+  }
+
+  private jump(direction: Direction, stateComp: ICharacterStateComp, physicsComp: IPhysicsComp) {
+    if (!this.setState(stateComp, CharacterState.Jump)) {
+      return;
+    }
+    // Are these going to be different for each character?
+    // Should these be in a character definition component?
+    physicsComp.velocityY = 24;
+    physicsComp.accelerationY = -1;
+    if (direction === Direction.Left) {
+      physicsComp.velocityX = -5;
+    } else if (direction === Direction.Right) {
+      physicsComp.velocityX = 5;
+    }
+  }
+
+  private endJump(stateComp: ICharacterStateComp, physicsComp: IPhysicsComp, positionComp: IPositionComp) {
+    positionComp.y = 0; // Redundant if physics is working properly
+    physicsComp.accelerationY = 0;
+    physicsComp.velocityY = 0;
+    physicsComp.velocityX = 0;
+    this.setState(stateComp, CharacterState.JumpEnd);
+    this.setState(stateComp, CharacterState.Stand);
   }
 
   private stand(stateComp: ICharacterStateComp, physicsComp: IPhysicsComp) {
@@ -247,6 +285,7 @@ export default class CharacterStateSystem implements ISystem {
     if (targetState === CharacterState.Stand) {
       return [
         CharacterState.Walk,
+        CharacterState.JumpEnd,
         CharacterState.HitstunEnd,
         CharacterState.AttackEnd,
         CharacterState.BlockEnd,
@@ -257,6 +296,10 @@ export default class CharacterStateSystem implements ISystem {
       return [CharacterState.Walk, CharacterState.Stand].includes(stateComp.state);
     } else if (targetState === CharacterState.AttackEnd) {
       return [CharacterState.Attack].includes(stateComp.state);
+    } else if (targetState === CharacterState.Jump) {
+      return [CharacterState.Walk, CharacterState.Stand].includes(stateComp.state);
+    } else if (targetState === CharacterState.JumpEnd) {
+      return [CharacterState.Jump].includes(stateComp.state);
     } else if (targetState === CharacterState.HitstunEnd) {
       return [CharacterState.Hitstun].includes(stateComp.state);
     } else if (targetState === CharacterState.Hitstun) {

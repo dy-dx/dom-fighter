@@ -17,13 +17,18 @@ export default class PhysicsSystem implements ISystem {
 
   public update(entities: IEntity[], dt: number): void {
     const physicsEntities = entities.filter((e): e is IPhysicsEntity => !!e.physicsComp);
-    const pushboxEntities = physicsEntities.filter((e) => e.physicsComp.pushbox.isActive);
+    const pushboxEntities = physicsEntities
+      .filter((e) => e.physicsComp.pushbox.isActive)
+      // Sort by Y position so that you can always jump over an opponent in the corner
+      .sort((a, b) => a.positionComp.y - b.positionComp.y);
 
     physicsEntities.forEach((e) => {
       const pos: IPositionComp = e.positionComp;
       const {velocityX, velocityY} = e.physicsComp;
       pos.x += velocityX * dt;
       pos.y += velocityY * dt;
+      pos.y = Math.max(pos.y, 0);
+      e.physicsComp.velocityY += e.physicsComp.accelerationY;
     });
 
     pushboxEntities.forEach((e) => {
@@ -42,6 +47,7 @@ export default class PhysicsSystem implements ISystem {
             return;
           }
 
+          // Calculate pushbox bounds
           const left = e.positionComp.x + e.physicsComp.pushbox.x;
           const right = left + e.physicsComp.pushbox.width;
           const oLeft = o.positionComp.x + o.physicsComp.pushbox.x;
