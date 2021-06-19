@@ -17,7 +17,7 @@
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-jsdoc": "^30.0.3 ",
     "jest": "^26.1.0",
-    "node-notifier": "^7.0.2",
+    "node-notifier": "^10.0.0",
     "node-turn": "0.0.4",
     "peer": "^0.2.10",
     "prettier": "2.0.5",

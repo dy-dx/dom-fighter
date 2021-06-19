@@ -33,10 +33,11 @@ bs.init({
 });
 
 watch.on('compile_errors', (lines) => {
+  const message = lines && lines.length ? lines : 'TypeScript compiler error';
   notifier.notify({
     group: 'dom-fighter',
     title: 'dom-fighter',
-    message: lines || 'TypeScript compiler error',
+    message,
     timeout: 4,
   });
 });
