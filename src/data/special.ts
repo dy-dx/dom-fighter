@@ -1,7 +1,7 @@
 import {IAttack} from "./index.js";
 
-export const MediumPunch: IAttack = {
-  id: "MediumPunch",
+export const Special: IAttack = {
+  id: "Special",
   damage: 80,
   hitStop: 12,
   hitStun: 8,
@@ -43,34 +43,40 @@ export const MediumPunch: IAttack = {
       width: 200,
     },
   ],
+  projectiles: [
+    {
+      width: 40,
+      height: 60,
+      x: 130,
+      y: 100,
+      speed: 3,
+    },
+  ],
   frames: [
     {},
-    {blockboxActive: true, x: 1},
-    {blockboxActive: true, x: 5},
-    {blockboxActive: true, x: 18},
-    {blockboxActive: true, x: 5},
-    {blockboxActive: true, x: 2},
+    {x: 1},
+    {x: 5},
+    {x: 18},
+    {x: 5},
+    {x: 2},
     {
-      blockboxActive: true,
-      hitboxIndex: 0,
       hurtboxIndex: 0,
       pushboxIndex: 0,
     },
     {
-      blockboxActive: true,
-      hitboxIndex: 1,
       hurtboxIndex: 0,
       pushboxIndex: 0,
     },
     {
-      blockboxActive: true,
-      hitboxIndex: 2,
       hurtboxIndex: 0,
       pushboxIndex: 0,
     },
     {
-      blockboxActive: true,
-      hitboxIndex: 2,
+      hurtboxIndex: 0,
+      pushboxIndex: 0,
+    },
+    {
+      spawnProjectileIndex: 0,
       hurtboxIndex: 0,
       pushboxIndex: 0,
     },

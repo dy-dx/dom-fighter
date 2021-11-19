@@ -43,6 +43,7 @@ export default class Character implements IEntity {
       right: false,
       down: false,
       attack: false,
+      special: false,
     };
 
     this.isControlledByClient = false;
@@ -83,7 +84,9 @@ export default class Character implements IEntity {
     };
 
     this.combatComp = {
+      move: "MediumPunch", //placeholder, fixme
       damage: 0,
+      facingDirection: FacingDirection.Left,
       hasHit: false,
       hitStop: 0,
       hitStun: 0,

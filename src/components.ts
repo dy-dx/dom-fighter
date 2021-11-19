@@ -9,7 +9,7 @@ export interface IPositionComp {
   y: number;
 }
 
-export type CharacterInputAction = "left" | "up" | "right" | "down" | "attack";
+export type CharacterInputAction = "left" | "up" | "right" | "down" | "attack" | "special";
 export type DebugInputAction = "pause" | "reset" | "nextFrame" | "saveState" | "loadState";
 export type InputAction = CharacterInputAction | DebugInputAction;
 
@@ -44,8 +44,12 @@ export interface IPhysicsComp {
   blockbox: IHitbox;
 }
 
+import type {MoveName} from "./data/index.js";
 export interface ICombatComp {
+  move: MoveName; // Current move name
   damage: number;
+  facingDirection: FacingDirection;
+  // Whether or not the current move has struck an opponent, i.e. has it been "used up"
   hasHit: boolean;
   hitStop: number;
   hitStun: number;

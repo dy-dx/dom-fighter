@@ -11,7 +11,9 @@ export const MAPPING: {[key: string]: InputAction} = {
   KeyW: "up",
   KeyD: "right",
   KeyS: "down",
+
   Space: "attack",
+  KeyF: "special",
 
   KeyI: "saveState",
   KeyO: "loadState",
@@ -30,6 +32,7 @@ export default class InputSystem implements ISystem {
       right: false,
       down: false,
       attack: false,
+      special: false,
     };
 
     document.addEventListener("keydown", this.pressKey.bind(this));

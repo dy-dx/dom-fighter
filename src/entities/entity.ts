@@ -11,6 +11,7 @@ import {
 
 export interface IEntity {
   id: number;
+  ownerId?: number;
 
   appearanceComp?: IAppearanceComp;
   characterDefinitionComp?: ICharacterDefinitionComp;

@@ -9,7 +9,7 @@ import {IEntity} from "../entities/entity.js";
 import {hitboxOverlaps} from "../util/aabb.js";
 import ISystem from "./system.js";
 
-import attackData from "../data/attack.js";
+import AttackData from "../data/index.js";
 
 interface ICombatEntity extends IEntity {
   combatComp: ICombatComp;
@@ -23,24 +23,33 @@ export default class CombatSystem implements ISystem {
     const physicsEntities = entities.filter((e): e is ICombatEntity => !!e.combatComp);
 
     physicsEntities.forEach((e) => {
-      if (!e.physicsComp.blockbox.isActive) {
-        return;
-      }
+      const opponents = physicsEntities.filter(
+        (o) => e !== o && !(e.ownerId !== undefined && e.ownerId === o.id),
+      );
 
-      physicsEntities
-        .filter((o) => e !== o && o.physicsComp.pushbox.isActive)
-        .forEach((o) => {
-          if (o.characterStateComp && this.testBlockbox(e, o)) {
-            o.combatComp.isInBlockbox = true;
-          }
-        });
+      if (e.physicsComp.blockbox.isActive) {
+        opponents
+          .filter((o) => o.physicsComp.pushbox.isActive)
+          .forEach((o) => {
+            if (o.characterStateComp && this.testBlockbox(e, o)) {
+              o.combatComp.isInBlockbox = true;
+            }
+          });
+      }
 
       if (e.combatComp.hasHit || !e.physicsComp.hitbox.isActive) {
         return;
       }
 
-      physicsEntities
-        .filter((o) => e !== o && o.physicsComp.hurtbox.isActive)
+      // // FIXME AAAAHHH
+      // if (!e.characterStateComp) {
+      //   return;
+      // }
+
+      const attackData = AttackData[e.combatComp.move];
+
+      opponents
+        .filter((o) => o.physicsComp.hurtbox.isActive)
         .forEach((o) => {
           if (o.characterStateComp && this.testHitbox(e, o)) {
             if (
@@ -59,7 +68,9 @@ export default class CombatSystem implements ISystem {
             o.combatComp.slideTime = attackData.slideTime;
             o.combatComp.slideSpeed = attackData.slideSpeed;
             // Opponent slides in the direction that the character is facing
-            o.combatComp.slideDirection = e.characterStateComp!.facingDirection;
+            // TODO: should slide in the direction of the attack i.e. fireballs
+            // o.combatComp.slideDirection = e.characterStateComp!.facingDirection;
+            o.combatComp.slideDirection = e.combatComp.facingDirection;
           }
         });
     });

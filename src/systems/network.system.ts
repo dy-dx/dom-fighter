@@ -57,6 +57,7 @@ export default class NetworkSystem implements ISystem {
         right: false,
         down: false,
         attack: false,
+        special: false,
       };
       this.clientInputs.push({tick: i, inputComp: fakeInputComp});
       this.remoteInputs.push({tick: i, inputComp: fakeInputComp});

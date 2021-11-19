@@ -9,10 +9,11 @@ import {
   IPositionComp,
 } from "../components.js";
 import {IEntity} from "../entities/entity.js";
+import Projectile from "../entities/projectile.js";
 import Game from "../game.js";
 import ISystem from "./system.js";
 
-import attackData from "../data/attack.js";
+import MoveData, {MoveName} from "../data/index.js";
 
 interface ICharacterEntity extends IEntity {
   characterDefinitionComp: ICharacterDefinitionComp;
@@ -92,50 +93,8 @@ export default class CharacterStateSystem implements ISystem {
         }
 
         if (stateComp.state === CharacterState.Attack) {
-          // extract this
-          if (stateComp.frameIndex >= attackData.frames.length) {
-            this.endAttack(stateComp, combatComp);
-          } else {
-            const frameData = attackData.frames[stateComp.frameIndex];
-
-            if (frameData.hitboxIndex !== undefined) {
-              physicsComp.hitbox.isActive = true;
-              Object.assign(physicsComp.hitbox, attackData.hitboxes[frameData.hitboxIndex]);
-              if (isFacingLeft) {
-                physicsComp.hitbox.x = physicsComp.hitbox.x * -1 - physicsComp.hitbox.width;
-              }
-              // if this is the first active frame, enable damage
-              if (attackData.frames[stateComp.frameIndex - 1].hitboxIndex === undefined) {
-                combatComp.hasHit = false;
-              }
-            } else {
-              physicsComp.hitbox.isActive = false;
-            }
-
-            if (frameData.blockboxActive) {
-              physicsComp.blockbox.isActive = true;
-            }
-
-            if (frameData.pushboxIndex !== undefined) {
-              Object.assign(physicsComp.pushbox, attackData.pushboxes[frameData.pushboxIndex]);
-            }
-            if (frameData.hurtboxIndex !== undefined) {
-              Object.assign(physicsComp.hurtbox, attackData.hurtboxes[frameData.hurtboxIndex]);
-            }
-            if (frameData.x) {
-              const offsetX = isFacingLeft ? -frameData.x : frameData.x;
-              // this is intended to push you back more if you land a hit.
-              // very hacky, address this at some point
-              const offsetScale = combatComp.hasHit ? 2 : 1;
-              positionComp.x += offsetX * offsetScale;
-            }
-
-            if (combatComp.hitStop > 0) {
-              combatComp.hitStop--;
-            } else {
-              stateComp.frameIndex++;
-            }
-          }
+          // Doesn't belong in this system
+          this.handleAttack(combatComp, stateComp, e, entities, isFacingLeft, physicsComp, positionComp);
         }
 
         if (isFacingLeft) {
@@ -176,13 +135,99 @@ export default class CharacterStateSystem implements ISystem {
           this.stand(stateComp, physicsComp);
         }
 
+        if (pressed.special) {
+          this.attack(stateComp, physicsComp, combatComp, MoveData.Special.id);
+        }
+
         if (pressed.attack) {
-          this.attack(stateComp, physicsComp);
+          this.attack(stateComp, physicsComp, combatComp, MoveData.MediumPunch.id);
         }
 
         // reset for next tick
         combatComp.isInBlockbox = false;
       });
+  }
+
+  private handleAttack(
+    combatComp: ICombatComp,
+    stateComp: ICharacterStateComp,
+    e: ICharacterEntity,
+    entities: IEntity[],
+    isFacingLeft: boolean,
+    physicsComp: IPhysicsComp,
+    positionComp: IPositionComp,
+  ) {
+    const attackData = MoveData[combatComp.move];
+    if (stateComp.frameIndex >= attackData.frames.length) {
+      this.endAttack(stateComp, combatComp);
+      return;
+    }
+
+    const frameData = attackData.frames[stateComp.frameIndex];
+
+    if (frameData.spawnProjectileIndex !== undefined) {
+      const pData = attackData.projectiles![frameData.spawnProjectileIndex];
+      // fuk
+      const p = new Projectile(e.id);
+      p.id = entities.length;
+      entities.push(p);
+
+      const direction = Math.sign(Number(!isFacingLeft) * 2 - 1);
+
+      p.positionComp.y = e.positionComp.y + pData.y;
+      p.positionComp.x = e.positionComp.x + pData.x * direction;
+      p.physicsComp.velocityX = pData.speed * direction;
+      p.physicsComp.hitbox.height = pData.height;
+      p.physicsComp.hitbox.width = pData.width;
+      p.physicsComp.hitbox.x = -(pData.width / 2) * direction;
+      if (isFacingLeft) {
+        p.physicsComp.hitbox.x -= pData.width;
+      }
+      p.physicsComp.hitbox.isActive = true;
+
+      p.combatComp.hasHit = false;
+      p.combatComp.damage = attackData.damage;
+      p.combatComp.move = attackData.id;
+      p.combatComp.facingDirection = e.combatComp.facingDirection;
+    }
+
+    if (frameData.hitboxIndex !== undefined) {
+      physicsComp.hitbox.isActive = true;
+      Object.assign(physicsComp.hitbox, attackData.hitboxes[frameData.hitboxIndex]);
+      if (isFacingLeft) {
+        physicsComp.hitbox.x = physicsComp.hitbox.x * -1 - physicsComp.hitbox.width;
+      }
+      // if this is the first active frame, enable damage
+      if (attackData.frames[stateComp.frameIndex - 1]?.hitboxIndex === undefined) {
+        combatComp.hasHit = false;
+      }
+    } else {
+      physicsComp.hitbox.isActive = false;
+    }
+
+    if (frameData.blockboxActive) {
+      physicsComp.blockbox.isActive = true;
+    }
+
+    if (frameData.pushboxIndex !== undefined) {
+      Object.assign(physicsComp.pushbox, attackData.pushboxes[frameData.pushboxIndex]);
+    }
+    if (frameData.hurtboxIndex !== undefined) {
+      Object.assign(physicsComp.hurtbox, attackData.hurtboxes[frameData.hurtboxIndex]);
+    }
+    if (frameData.x) {
+      const offsetX = isFacingLeft ? -frameData.x : frameData.x;
+      // this is intended to push you back more if you land a hit.
+      // very hacky, address this at some point
+      const offsetScale = combatComp.hasHit ? 2 : 1;
+      positionComp.x += offsetX * offsetScale;
+    }
+
+    if (combatComp.hitStop > 0) {
+      combatComp.hitStop--;
+    } else {
+      stateComp.frameIndex++;
+    }
   }
 
   private walk(
@@ -230,10 +275,17 @@ export default class CharacterStateSystem implements ISystem {
     }
   }
 
-  private attack(stateComp: ICharacterStateComp, physicsComp: IPhysicsComp) {
+  private attack(
+    stateComp: ICharacterStateComp,
+    physicsComp: IPhysicsComp,
+    combatComp: ICombatComp,
+    moveName: MoveName,
+  ) {
     if (this.setState(stateComp, CharacterState.Attack)) {
       physicsComp.velocityX = 0;
       stateComp.frameIndex = 0;
+      combatComp.move = moveName;
+      combatComp.facingDirection = stateComp.facingDirection;
     }
   }
 
