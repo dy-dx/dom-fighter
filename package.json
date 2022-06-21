@@ -9,23 +9,24 @@
     "test": "jest"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.5",
-    "@typescript-eslint/eslint-plugin": "^3.7.0",
-    "@typescript-eslint/parser": "^3.7.0",
-    "browser-sync": "^2.26.10",
-    "eslint": "^7.5.0",
-    "eslint-config-prettier": "^6.11.0",
-    "eslint-plugin-jsdoc": "^30.0.3 ",
-    "jest": "^26.1.0",
+    "@types/jest": "^28.1.3",
+    "@typescript-eslint/eslint-plugin": "^5.29.0",
+    "@typescript-eslint/parser": "^5.29.0",
+    "browser-sync": "^2.27.10",
+    "eslint": "^8.18.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-jsdoc": "^39.3.3",
+    "jest": "^28.1.1",
+    "jest-environment-jsdom": "^28.1.1",
     "node-notifier": "^10.0.0",
-    "node-turn": "0.0.4",
-    "peer": "^0.2.10",
-    "prettier": "2.0.5",
-    "ts-jest": "^26.1.3",
+    "node-turn": "0.0.6",
+    "peer": "^0.6.1",
+    "prettier": "2.7.1",
+    "ts-jest": "^28.0.5",
     "tsc-watch": "dy-dx/tsc-watch#emit-error-lines",
-    "typescript": "^3.9.7"
+    "typescript": "^4.7.4"
   },
   "dependencies": {
-    "peerjs": "^1.0.0"
+    "peerjs": "^1.4.6"
   }
 }

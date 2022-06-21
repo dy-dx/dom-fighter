@@ -12,9 +12,6 @@
         "noUnusedLocals": true,
         "strict": true
     },
-    "files": [
-        "node_modules/peerjs/dist/peerjs.min.js"
-    ],
     "include": [
         "src/**/*"
     ],

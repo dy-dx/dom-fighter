@@ -157,15 +157,15 @@ export default class NetworkSystem implements ISystem {
     this.sendPing();
   }
 
-  private onMessage(type: MessageType, data: any): void {
+  private onMessage(type: MessageType, data: unknown): void {
     if (type === MessageType.Ping) {
-      this.onPing(data);
+      this.onPing(data as number);
     } else if (type === MessageType.Pong) {
-      this.onPong(data);
+      this.onPong(data as number);
     } else if (type === MessageType.Chat) {
-      this.onChat(data);
+      this.onChat(data as string);
     } else if (type === MessageType.Input) {
-      this.onInput(data);
+      this.onInput(data as {inputComp: ICharacterInputComp; tick: number});
     } else {
       console.warn("Unhandled message type:", type, data);
     }

@@ -3,8 +3,7 @@ import Peer from "./util/peer-wrapper.js";
 // fixme
 /* eslint-disable
   @typescript-eslint/no-unsafe-assignment,
-  @typescript-eslint/no-unsafe-member-access,
-  @typescript-eslint/explicit-module-boundary-types
+  @typescript-eslint/no-unsafe-member-access
 */
 
 export const enum MessageType {
@@ -29,7 +28,7 @@ export default class Network {
   public clientId: string;
   public peerId: string | null;
   public isHost: boolean;
-  private peer: Peer;
+  private peer: Peer.Peer;
   private connection: Peer.DataConnection | null;
   private onMessageCallback: OnMessageCallback;
   private onReadyCallback: OnReadyCallback;
@@ -53,14 +52,17 @@ export default class Network {
       });
     }
 
-    this.peer = new Peer(this.clientId, peerOpts);
     this.connection = null;
+    this.peer = new window.Peer(this.clientId, peerOpts);
 
     if (this.peerId) {
-      this.connection = this.peer.connect(this.peerId, {reliable: false});
-      this.connection.on("open", this.onOpen.bind(this));
+      // Despite what the docs say, there are issues when trying to connect before the "open" event
+      this.peer.on("open", () => {
+        this.connection = this.peer.connect(this.peerId!, {reliable: false});
+        this.connection.on("open", this.onOpen.bind(this));
+      });
     } else {
-      this.peer.on("connection", (conn) => {
+      this.peer.on("connection", (conn: Peer.DataConnection) => {
         this.connection = conn;
         this.peerId = conn.peer;
         this.connection.on("open", this.onOpen.bind(this));
@@ -68,7 +70,7 @@ export default class Network {
     }
   }
 
-  public send(type: MessageType, data: any): void {
+  public send(type: MessageType, data: unknown): void {
     this.connection!.send({type, data});
   }
 

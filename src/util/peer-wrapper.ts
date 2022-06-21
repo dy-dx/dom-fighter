@@ -3,6 +3,12 @@
 
 // ^ That used to work until peerjs switched to parcel. Now we're just loading the script in index.html.
 
+declare global {
+  interface Window {
+    Peer: typeof Peer.Peer;
+  }
+}
+
 /**
  * This is a hack that imports peerjs types without actually importing the library.
  * See: https://github.com/basarat/typescript-book/blob/master/docs/project/external-modules.md

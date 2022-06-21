@@ -40,7 +40,7 @@ export default class InputSystem implements ISystem {
     entities
       .filter((e) => e.isControlledByClient)
       .forEach((e) => {
-        Object.assign(e.inputComp, this.pressed);
+        Object.assign(e.inputComp!, this.pressed);
       });
   }
 
